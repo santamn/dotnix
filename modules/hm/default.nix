@@ -18,38 +18,7 @@
     # --- Development Tools ---
     lazygit
 
-    # --- LSP & Language Tools ---
-    # Go
-    go
-    gopls
-    # Rust
-    rustup
-    # Haskell
-    ghc
-    haskell-language-server
-    # Clojure
-    clojure
-    clojure-lsp
-    leiningen
-    # Python
-    python3
-    python3Packages.python-lsp-server
-    # Lua
-    lua
-    lua-language-server
-    # TypeScript / JavaScript
-    nodejs
-    nodePackages.typescript
-    nodePackages.typescript-language-server
-    # HTML / CSS / JSON
-    nodePackages.vscode-langservers-extracted
-    # YAML
-    yaml-language-server
-    # Markdown
-    marksman
-    # Dockerfile
-    dockerfile-language-server-nodejs
-    # Nix
+    # --- Nix Tools ---
     nix-prefetch # Nix パッケージの SHA256 ハッシュ取得
     nixpkgs-fmt # Nix コードフォーマッター
     nil # Nix Language Server
@@ -152,6 +121,14 @@
   # Program-specific configuration
   # ===========================
   programs.nushell.enable = true;
+
+  # direnv で devShell を自動的に読み込む
+  programs.direnv = {
+    enable = true;
+    enableZshIntegration = true;
+    enableBashIntegration = true;
+    nix-direnv.enable = true;
+  };
 
   # Ghostty terminal configuration
   # Note: Ghostty config is managed via ~/.config/ghostty/config
