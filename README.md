@@ -4,6 +4,12 @@
 
 [hydenix](https://github.com/richen604/hydenix) のテンプレートをベースにした NixOS 構成です。
 
+## apply configuration
+
+```bash
+sudo nixos-rebuild switch --flake .#thinkpad-x13-gen6
+```
+
 ## packages
 
 ### desktop applications
@@ -135,4 +141,6 @@ Rust プロジェクトで高速な wild リンカーを使用する開発環境
 
 このように設定することで、プロジェクトの devShell 環境で wild リンカーが自動的に使用される。
 
-## license MIT License
+## license 
+
+MIT License
