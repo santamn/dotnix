@@ -24,7 +24,7 @@ sudo nixos-rebuild switch --flake .#thinkpad-x13-gen6
 ### development tools
 
 - バージョン管理: git/lazygit
-- エディタ: Neovim(AstroNvim)
+- エディタ: Neovim (AstroNvim)
 - shell 関係
   - ターミナルエミュレータ: Ghostty 
   - ログインシェル: zsh

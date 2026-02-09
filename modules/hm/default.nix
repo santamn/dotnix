@@ -34,6 +34,9 @@
     nil # Nix Language Server
     statix # Nix 静的解析ツール
 
+    # --- CLI tools ---
+    wine64
+
     # --- Alternative Commands ---
     bat # cat
     bottom # top alternative
@@ -46,7 +49,6 @@
     slack
     zoom-us
     thunderbird
-    wine64
     signal-desktop
 
     # --- Japanese Input ---

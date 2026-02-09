@@ -4,6 +4,12 @@
     enableZshIntegration = true;
 
     settings = {
+      add_newline = true;
+      character = {
+        success_symbol = "[➜](bold green)";
+        error_symbol = "[➜](bold red)";
+      };
+
       format = builtins.concatStringsSep "\n" [
         "[░▒▓](#a3aed2)"
         "[ ](bg:#a3aed2 fg:#090c0c)"
