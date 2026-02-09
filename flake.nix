@@ -1,5 +1,5 @@
 {
-  description = "template for hydenix";
+  description = "NixOS configuration powered by hydenix";
 
   inputs = {
     nixpkgs = {
