@@ -20,12 +20,9 @@
   # Packages
   # ===========================
   home.packages = with pkgs; [
-    # --- Terminal / Shell ---
-    ghostty
-    nushell
-
     # --- Development Tools ---
     lazygit
+    helix # nushell の vi/vim/nano エイリアスで使用
 
     # --- Language Runtimes (for AstroNvim) ---
     nodejs # LSPs and REPL toggle terminal
@@ -92,8 +89,11 @@
     editors = {
       enable = true;
       neovim = true;
-      vscode.enable = false;
-      vim.enable = false;
+      vim = false;
+      vscode = {
+        enable = false;
+        wallbash = false;
+      };
       default = "nvim";
     };
 

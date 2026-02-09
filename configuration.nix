@@ -50,8 +50,8 @@
     # This must match the username you define in users.users below
     users."santamn" = {...}: {
       imports = [
-        inputs.hydenix.lib.homeModules
-        inputs.nix-index-database.hmModules.nix-index # Command-not-found and comma tool support
+        inputs.hydenix.homeModules.default
+        inputs.nix-index-database.homeModules.nix-index # Command-not-found and comma tool support
         ./modules/hm # Your custom home-manager modules (configure hydenix.hm here!)
       ];
     };
@@ -65,6 +65,7 @@
       "wheel"
       "networkmanager"
       "video"
+      "docker"
     ]; # User groups (determines permissions)
     shell = pkgs.zsh; # Login shell: zsh (interactive shell auto-switches to nushell)
   };

@@ -17,13 +17,13 @@
 
       # Search engine
       search = {
-        default = "DuckDuckGo";
+        default = "ddg";
         force = true;
       };
 
       # Extensions (Firefox Add-ons)
       # Using direct XPI URLs from Mozilla Add-ons
-      extensions = [
+      extensions.packages = [
         # uBlock Origin
         (pkgs.fetchurl {
           url = "https://addons.mozilla.org/firefox/downloads/latest/ublock-origin/latest.xpi";

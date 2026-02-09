@@ -1,4 +1,8 @@
-{pkgs, ...}: {
+{
+  pkgs,
+  lib,
+  ...
+}: {
   imports = [
     # ./example.nix - add your modules here
   ];
@@ -35,11 +39,8 @@
       CPU_SCALING_GOVERNOR_ON_BAT = "powersave";
     };
   };
-
-  # ===========================
-  # SSH
-  # ===========================
-  programs.ssh.startAgent = true;
+  # TLP と power-profiles-daemon は競合するため無効化
+  services.power-profiles-daemon.enable = lib.mkForce false;
 
   # ===========================
   # Japanese Input Method
@@ -61,9 +62,6 @@
     enable = true;
     dockerCompat = false; # Docker is already enabled
   };
-
-  # Add user to docker group
-  users.users.santamn.extraGroups = ["docker"];
 
   # ===========================
   # Nix Garbage Collection

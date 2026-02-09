@@ -2,6 +2,7 @@
   programs.starship = {
     enable = true;
     enableZshIntegration = true;
+    enableNushellIntegration = true;
 
     settings = {
       add_newline = true;
@@ -92,7 +93,7 @@
       nix_shell = {
         symbol = "";
         style = "bg:#212736";
-        format = "[[ $symbol ($version) ](fg:#769ff0 bg:#212736)]($style)";
+        format = "[[ $symbol $state( \($name\)) ](fg:#769ff0 bg:#212736)]($style)";
       };
 
       nodejs = {

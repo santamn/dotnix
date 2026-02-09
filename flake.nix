@@ -20,12 +20,15 @@
 
   outputs = {...} @ inputs: let
     hydenixConfig = inputs.nixpkgs.lib.nixosSystem {
-      system = "x86_64-linux";
       specialArgs = {
         inherit inputs;
       };
       modules = [
         ./configuration.nix
+        # モジュールの一つとしてアーキテクチャを指定
+        {
+          nixpkgs.hostPlatform = "x86_64-linux";
+        }
       ];
     };
     vmConfig = inputs.hydenix.lib.vmConfig {

@@ -94,8 +94,7 @@
         # カスタムアプリケーションのパスを追加
         $env.PATH = ($env.PATH |
           split row (char esep) |
-          prepend /home/myuser/.apps |
-          append /usr/bin/env
+          prepend ($env.HOME | path join ".apps")
         )
       '';
 
@@ -108,9 +107,14 @@
       };
     };
 
-    carapace.enable = true;
-    programs.fish.enable = true; # fish補完を使う場合
-    programs.zoxide.enable = true; # zoxideディレクトリジャンプを使う場合
-    carapace.enableNushellIntegration = true;
+    carapace = {
+      enable = true;
+      enableNushellIntegration = true;
+    };
+    fish.enable = true; # fish補完を使う場合
+    zoxide = {
+      enable = true;
+      enableNushellIntegration = true;
+    };
   };
 }

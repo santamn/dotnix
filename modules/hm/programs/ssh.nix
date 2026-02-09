@@ -9,10 +9,5 @@
         user = "git";
       };
     };
-
-    # ssh-agent の設定
-    extraConfig = ''
-      AddKeysToAgent yes
-    '';
   };
 }

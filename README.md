@@ -2,7 +2,7 @@
 
 # NixOS configuration powered by hydenix
 
-[hydenix](https://github.com/richen604/hydenix) のテンプレートをベースにした NixOS 構成です。
+[hydenix](https://github.com/richen604/hydenix) のテンプレートをベースにした NixOS の設定です。
 
 ## apply configuration
 
