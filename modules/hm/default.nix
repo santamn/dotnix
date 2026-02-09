@@ -27,6 +27,12 @@
     # --- Development Tools ---
     lazygit
 
+    # --- Language Runtimes (for AstroNvim) ---
+    nodejs # LSPs and REPL toggle terminal
+    python3 # Python REPL
+    go # go DiskUsage() toggle terminal
+    tree-sitter # Tree-sitter CLI for auto_install
+
     # --- Nix Tools ---
     # These are kept global as they're used across all projects
     nix-prefetch # Nix パッケージの SHA256 ハッシュ取得
@@ -107,9 +113,6 @@
       discord.enable = false;
       vesktop.enable = true;
     };
-
-    # --- Spotify ---
-    spotify.enable = true;
 
     # --- Terminals ---
     terminals = {
