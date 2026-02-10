@@ -6,6 +6,7 @@
   imports = [
     # Program-specific configurations
     ./programs/direnv.nix
+    ./programs/fcitx5.nix
     ./programs/ghostty.nix
     ./programs/git.nix
     ./programs/neovim.nix
@@ -53,11 +54,6 @@
     zoom-us
     thunderbird
     signal-desktop
-
-    # --- Japanese Input ---
-    # fcitx5 is configured at system level (modules/system/default.nix)
-    # Config tool can be launched via fcitx5-configtool
-    qt6Packages.fcitx5-configtool
   ];
 
   # ===========================
