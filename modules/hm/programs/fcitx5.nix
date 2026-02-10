@@ -47,14 +47,16 @@
         # アドオンの設定 (~/.config/fcitx5/conf/classicui.conf)
         addons = {
           classicui = {
-            # 縦書き候補ウィンドウを有効にするか
-            "Vertical Candidate List" = false;
-            # システムのスケールに追従
-            PerScreenDPI = true;
-            # フォント設定 (お好みに合わせて変更してください)
-            Font = "Noto Sans CJK JP 12";
-            # テーマ (Catppuccinなどを入れている場合は "catppuccin-mocha" 等も指定可能)
-            Theme = "Default";
+            globalSection = {
+              # 縦書き候補ウィンドウを有効にするか
+              "Vertical Candidate List" = false;
+              # システムのスケールに追従
+              PerScreenDPI = true;
+              # フォント設定 (お好みに合わせて変更してください)
+              Font = "Noto Sans CJK JP 12";
+              # テーマ (Catppuccinなどを入れている場合は "catppuccin-mocha" 等も指定可能)
+              Theme = "Default";
+            };
           };
         };
       };
