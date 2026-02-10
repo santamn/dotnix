@@ -68,7 +68,6 @@
       themes = [
         "AncientAliens"
         "BlueSky"
-        "Breezy Autumn"
         "Catppuccin Mocha"
         "Catppuccin Latte"
         "Catppuccin-Macchiato"
