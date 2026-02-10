@@ -34,13 +34,17 @@
 
         # グローバルキー設定 (~/.config/fcitx5/config)
         globalOptions = {
-          Hotkey = {
+          "Hotkey/TriggerKeys" = {
             # トグル式の入力切り替えを無効化
-            TriggerKeys."0" = "";
+            "0" = "";
+          };
+          "Hotkey/ActivateKeys" = {
             # 右Alt → 日本語入力 (Mozc) に切り替え
-            ActivateKeys."0" = "Alt_R";
+            "0" = "Alt_R";
+          };
+          "Hotkey/DeactivateKeys" = {
             # 左Alt → 英語入力 (Direct Input) に切り替え
-            DeactivateKeys."0" = "Alt_L";
+            "0" = "Alt_L";
           };
         };
 
