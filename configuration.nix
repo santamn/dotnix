@@ -1,6 +1,7 @@
 {
   inputs,
   pkgs,
+  lib,
   ...
 }:
 # FOLLOW THE BELOW INSTRUCTIONS LINE BY LINE TO SET UP YOUR SYSTEM
@@ -29,7 +30,84 @@
     inputs.nixos-hardware.nixosModules.common-pc-ssd # SSD storage
   ];
 
-  nixpkgs.overlays = [inputs.nix-firefox-addons.overlays.default];
+  nixpkgs.overlays = lib.mkAfter [
+    inputs.nix-firefox-addons.overlays.default
+
+    # Workaround for occasional GitHub tarball truncation (Unexpected EOF).
+    # Force a git-based fetch for the themes that frequently fail on some networks.
+    (
+      final: prev: let
+        hasHydenixThemes = prev ? hydenix-themes;
+
+        mkFetchGit = {
+          url,
+          rev,
+          hash,
+        }:
+          prev.fetchgit {
+            inherit url rev;
+            inherit hash;
+          };
+
+        overrideThemeSrc = themeName: newSrc:
+          if hasHydenixThemes && builtins.hasAttr themeName prev.hydenix-themes
+          then prev.hydenix-themes.${themeName}.overrideAttrs (_: {src = newSrc;})
+          else null;
+
+        overrides = lib.filterAttrs (_: v: v != null) {
+          "Rain Dark" = overrideThemeSrc "Rain Dark" (mkFetchGit {
+            url = "https://github.com/rishav12s/Rain-Dark";
+            rev = "da26bafb755fcd96d107cc7b60db43e85e3a3876";
+            hash = "sha256-zv66a/fh3xqOIYVD6OUi4ZEpn3L29J2vvBnPBjeQW7w=";
+          });
+
+          "Catppuccin Mocha" = overrideThemeSrc "Catppuccin Mocha" (mkFetchGit {
+            url = "https://github.com/HyDE-Project/hyde-themes";
+            rev = "415d22a6bb6348a6d09c11307be54c592fb15138";
+            hash = "sha256-GoXRPYUFdrw6P8OeOsSiFDC9FhaEyo1+lvta0FCJoPY=";
+          });
+
+          "Catppuccin Latte" = overrideThemeSrc "Catppuccin Latte" (mkFetchGit {
+            url = "https://github.com/HyDE-Project/hyde-themes";
+            rev = "9a9332bb660ecb2e05671b7dcd7dd058b0803e48";
+            hash = "sha256-dW5DgXFxFNjt54Styzk+Ew3pv4rO1FX/qtfDGIClLuY=";
+          });
+
+          "Catppuccin-Macchiato" = overrideThemeSrc "Catppuccin-Macchiato" (mkFetchGit {
+            url = "https://github.com/deepu105/hyde-theme-catppuccin-macchiato";
+            rev = "7f1f33e554a342afcc9723d9b87123aa964cf994";
+            hash = "sha256-W5xjs+E//G2uhwzjq2tiWUMNdff6xmWUvH59tUoKjA0=";
+          });
+        };
+      in
+        lib.optionalAttrs hasHydenixThemes {
+          hydenix-themes = prev.hydenix-themes // overrides;
+        }
+    )
+  ];
+
+  # GitHub tarball download can occasionally truncate on some networks.
+  # These settings make Nix fetches more robust (retries + IPv4 + HTTP/1.1).
+  nix.settings = {
+    download-attempts = 10;
+    connect-timeout = 10;
+    stalled-download-timeout = 60;
+    curl-flags = [
+      "-4"
+      "--http1.1"
+      "--retry"
+      "10"
+      "--retry-all-errors"
+      "--retry-delay"
+      "1"
+      "--connect-timeout"
+      "10"
+      "--speed-time"
+      "30"
+      "--speed-limit"
+      "1024"
+    ];
+  };
 
   # If enabling NVIDIA, you will be prompted to configure hardware.nvidia
   # hardware.nvidia = {
