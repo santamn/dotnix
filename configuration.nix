@@ -81,9 +81,11 @@
 
   # Home Manager Configuration - manages user-specific configurations (dotfiles, themes, etc.)
   home-manager = {
+    # 既存のファイルがある場合、拡張子 .backup をつけて退避させ、エラーにしない
+    backupFileExtension = "backup";
+    extraSpecialArgs = {inherit inputs;};
     useGlobalPkgs = true;
     useUserPackages = true;
-    extraSpecialArgs = {inherit inputs;};
 
     # User Configuration - REQUIRED: Change "hydenix" to your actual username
     # This must match the username you define in users.users below
