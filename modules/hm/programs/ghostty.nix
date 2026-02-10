@@ -8,7 +8,7 @@
       background-opacity = "0.70";
 
       font-size = 10;
-      font-family = "Hack Nerd Font";
+      font-family = "FiraCode Nerd Font";
     };
   };
 }
