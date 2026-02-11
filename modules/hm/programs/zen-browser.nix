@@ -55,6 +55,16 @@
         # Performance
         "gfx.webrender.all" = true;
         "media.ffmpeg.vaapi.enabled" = true;
+
+        # Scroll behavior
+        "mousewheel.default.delta_multiplier_y" = 50; # Default is 100, set to 50 for slower scrolling
+
+        # Zoom level
+        # -1.0 is system default.
+        # To zoom out (make things smaller):
+        # - on standard display try "0.9" or "0.8"
+        # - on Retina display try "1.5" or "1.7"
+        "layout.css.devPixelsPerPx" = "0.8";
       };
     };
   };
