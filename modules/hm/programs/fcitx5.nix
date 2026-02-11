@@ -1,4 +1,9 @@
 {pkgs, ...}: {
+  # GTK_IM_MODULE を空に設定して Fcitx5 の動作を妨げないようにする
+  # home.sessionVariables = {
+  #   GTK_IM_MODULE = "";
+  # };
+
   # Fcitx5 本体とアドオンのインストール・有効化
   i18n.inputMethod = {
     enable = true;
