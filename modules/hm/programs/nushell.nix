@@ -89,6 +89,11 @@
               completer: $multiple_completers
             }
           }
+          hooks: {
+            env_change: {
+              PWD: [{|before, after| ls }] # ディレクトリ変更時に自動で ls を実行
+            }
+          }
         }
         # PATH 環境変数の設定
         # カスタムアプリケーションのパスを追加
