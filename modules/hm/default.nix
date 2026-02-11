@@ -100,8 +100,8 @@
           # 以前の設定を無効化
           gesture = 3, horizontal, unset
           # 3本指の水平スワイプでワークスペースを切り替え
-          # 指の動きに対して2倍の速度でアニメーションが進行するように設定
-          gesture = 3, horizontal, workspace, scale: 20.0
+          # 指の動きに対して3000倍の速度でアニメーションが進行するように設定
+          gesture = 3, horizontal, workspace, scale: 3000.0
         }
       '';
 
