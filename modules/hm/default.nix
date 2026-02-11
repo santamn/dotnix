@@ -78,16 +78,45 @@
   hydenix.hm = {
     enable = true;
 
-    hyprland.extraConfig = ''
-      input {
-        # CapsLock と Ctrl キーを入れ替える
-        kb_options = ctrl:swapcaps
-        # 指の上下とスクロール方向を逆にする
-        touchpad {
-          natural_scroll = true
+    hyprland = {
+      extraConfig = ''
+        input {
+          # CapsLock と Ctrl キーを入れ替える
+          kb_options = ctrl:swapcaps
+          # 指の上下とスクロール方向を逆にする
+          touchpad {
+            natural_scroll = true
+          }
         }
-      }
-    '';
+      '';
+
+      hypridle = {
+        enable = true;
+        overrideConfig = ''
+          general {
+            lock_cmd = pidof hyprlock || hyprlock       # dbus/sysd lock command (loginctl lock-session)
+            before_sleep_cmd = loginctl lock-session    # command to run before sleep
+            after_sleep_cmd = hyprctl dispatch dpms on  # command to run after sleep
+          }
+          # 15分で画面をロック
+          listener {
+            timeout = 900                                # 15min
+            on-timeout = loginctl lock-session           # lock screen when timeout has passed
+          }
+          # 20分で画面をオフ
+          listener {
+            timeout = 1200                               # 20min
+            on-timeout = hyprctl dispatch dpms off       # screen off when timeout has passed
+            on-resume = hyprctl dispatch dpms on         # screen on when activity is detected after timeout has fired.
+          }
+          # 30分でサスペンド
+          listener {
+            timeout = 1800                               # 30min
+            on-timeout = systemctl suspend               # suspend pc
+          }
+        '';
+      };
+    };
 
     theme = {
       enable = true;
@@ -140,34 +169,6 @@
     terminals = {
       enable = true;
       kitty.enable = false;
-    };
-
-    # --- HyprIdle ---
-    hypridle = {
-      enable = true;
-      overrideConfig = ''
-        general {
-          lock_cmd = pidof hyprlock || hyprlock       # dbus/sysd lock command (loginctl lock-session)
-          before_sleep_cmd = loginctl lock-session    # command to run before sleep
-          after_sleep_cmd = hyprctl dispatch dpms on  # command to run after sleep
-        }
-        # 15分で画面をロック
-        listener {
-          timeout = 900                                # 15min
-          on-timeout = loginctl lock-session           # lock screen when timeout has passed
-        }
-        # 20分で画面をオフ
-        listener {
-          timeout = 1200                               # 20min
-          on-timeout = hyprctl dispatch dpms off       # screen off when timeout has passed
-          on-resume = hyprctl dispatch dpms on         # screen on when activity is detected after timeout has fired.
-        }
-        # 30分でサスペンド
-        listener {
-          timeout = 1800                               # 30min
-          on-timeout = systemctl suspend               # suspend pc
-        }
-      '';
     };
   };
 }
