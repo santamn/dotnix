@@ -1,8 +1,8 @@
 {pkgs, ...}: {
   # GTK_IM_MODULE を空に設定して Fcitx5 の動作を妨げないようにする
-  # home.sessionVariables = {
-  #   GTK_IM_MODULE = "";
-  # };
+  home.sessionVariables = {
+    GTK_IM_MODULE = "";
+  };
 
   # Fcitx5 本体とアドオンのインストール・有効化
   i18n.inputMethod = {
@@ -12,7 +12,6 @@
     fcitx5 = {
       addons = with pkgs; [
         fcitx5-mozc
-        fcitx5-gtk
         qt6Packages.fcitx5-configtool
       ];
       waylandFrontend = true;
