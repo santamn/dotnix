@@ -79,7 +79,7 @@
         # To zoom out (make things smaller):
         # - on standard display try "0.9" or "0.8"
         # - on Retina display try "1.5" or "1.7"
-        "layout.css.devPixelsPerPx" = "1.0";
+        "layout.css.devPixelsPerPx" = "1.2";
       };
     };
   };
