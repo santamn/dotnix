@@ -96,9 +96,7 @@
   # Touchpad settings
   services.libinput = {
     enable = true;
-    touchpad = {
-      naturalScrolling = true; # Scroll content down when swiping up (Natural Scrolling)
-    };
+    touchpad.naturalScrolling = false;
   };
 
   # Keyboard settings (Swap CapsLock and Ctrl)
