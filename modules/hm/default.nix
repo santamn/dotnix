@@ -83,9 +83,10 @@
         input {
           # CapsLock と Ctrl キーを入れ替える
           kb_options = ctrl:swapcaps
-          # 指の上下とスクロール方向を逆にする
+
           touchpad {
-            natural_scroll = true
+            natural_scroll = true # 指の上下とスクロール方向を逆にする
+            scroll_factor = 0.5   # スクロール速度を半分にする
           }
         }
       '';
