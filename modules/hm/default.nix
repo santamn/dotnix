@@ -32,7 +32,6 @@
     tree-sitter # Tree-sitter CLI for auto_install
 
     # --- Nix Tools ---
-    # These are kept global as they're used across all projects
     nix-prefetch # Nix パッケージの SHA256 ハッシュ取得
     nixpkgs-fmt # Nix コードフォーマッター
     nil # Nix Language Server
@@ -73,7 +72,7 @@
   };
 
   # ===========================
-  # HyDenix Module Options
+  # hydenix Module Options
   # ===========================
   hydenix.hm = {
     enable = true;
@@ -95,14 +94,6 @@
             tap_button_map = lmr
           }
         }
-
-        # gestures {
-        #   # 以前の設定を無効化
-        #   gesture = 3, horizontal, unset
-        #   # 3本指の水平スワイプでワークスペースを切り替え
-        #   # 指の動きに対して3000倍の速度でアニメーションが進行するように設定
-        #   gesture = 3, horizontal, workspace, scale: 3000.0
-        # }
       '';
 
       hypridle = {
@@ -115,19 +106,19 @@
           }
           # 15分で画面をロック
           listener {
-            timeout = 900                                # 15min
-            on-timeout = loginctl lock-session           # lock screen when timeout has passed
+            timeout = 900                          # 15min
+            on-timeout = loginctl lock-session     # lock screen when timeout has passed
           }
           # 20分で画面をオフ
           listener {
-            timeout = 1200                               # 20min
-            on-timeout = hyprctl dispatch dpms off       # screen off when timeout has passed
-            on-resume = hyprctl dispatch dpms on         # screen on when activity is detected after timeout has fired.
+            timeout = 1200                         # 20min
+            on-timeout = hyprctl dispatch dpms off # screen off when timeout has passed
+            on-resume = hyprctl dispatch dpms on   # screen on when activity is detected after timeout has fired.
           }
           # 30分でサスペンド
           listener {
-            timeout = 1800                               # 30min
-            on-timeout = systemctl suspend               # suspend pc
+            timeout = 1800                         # 30min
+            on-timeout = systemctl suspend         # suspend pc
           }
         '';
       };
