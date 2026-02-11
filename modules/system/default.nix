@@ -88,7 +88,7 @@
   security.pam.services = {
     sudo.fprintAuth = true; # sudo で指紋認証を有効化
     login = {
-      fprintAuth = true; # ログイン時に指紋認証を有効化
+      fprintAuth = false; # ログイン時は指紋認証を無効化
       enableGnomeKeyring = true; # キーリングの自動ロック解除
     };
   };
