@@ -99,7 +99,7 @@
     touchpad.naturalScrolling = false;
   };
 
-  # Keyboard settings (Swap CapsLock and Ctrl)
+  # Keyboard settings (Swap CapsLock and Ctrl) for TTY Console
   services.xserver.xkb.options = "ctrl:swapcaps";
   console.useXkbConfig = true; # Apply xkb options to console
 

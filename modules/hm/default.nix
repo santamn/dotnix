@@ -61,6 +61,13 @@
   hydenix.hm = {
     enable = true;
 
+    # CapsLock と Ctrl キーを入れ替える
+    hyprland.extraConfig = ''
+      input {
+        kb_options = ctrl:swapcaps
+      }
+    '';
+
     theme = {
       enable = true;
       active = "Code Garden";
