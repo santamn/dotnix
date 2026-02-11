@@ -18,6 +18,9 @@
     ./programs/zen-browser.nix
   ];
 
+  # flake の置かれているパスを全体で使えるようにする
+  _module.args.nixConfigPath = "${config.home.homeDirectory}/dotnix";
+
   # ===========================
   # Packages
   # ===========================
@@ -30,6 +33,16 @@
     nodejs # LSPs and REPL toggle terminal
     gdu # go DiskUsage() - Disk usage analyzer
     tree-sitter # Tree-sitter CLI for auto_install
+
+    # --- Mason Dependencies ---
+    gnumake
+    gcc
+    unzip
+    wget
+    gnutar
+    # すでにインストールされている
+    # curl
+    # gzip
 
     # --- Nix Tools ---
     nix-prefetch # Nix パッケージの SHA256 ハッシュ取得
