@@ -107,23 +107,18 @@
             tap_button_map = lmr
           }
         }
+
+        # Ghostty Quick Terminal (Dropdown)
+        # Super + Alt + T でトグル表示
+        bind = $mainMod ALT, T, exec, pgrep -f "ghostty --class=com.ghostty.quick" && hyprctl dispatch togglespecialworkspace quickterm || ghostty --class=com.ghostty.quick
+
+        # クイックターミナルのウィンドウ設定（上部から40%の高さで表示）
+        windowrulev2 = float, class:^(com.ghostty.quick)$
+        windowrulev2 = size 100% 40%, class:^(com.ghostty.quick)$
+        windowrulev2 = move 0 0, class:^(com.ghostty.quick)$
+        windowrulev2 = workspace special:quickterm, class:^(com.ghostty.quick)$
+        windowrulev2 = animation slide, class:^(com.ghostty.quick)$
       '';
-
-      # Dropdown ターミナルを Ghostty に設定
-      pyprland = {
-        enable = true;
-        overrideConfig = ''
-          [pyprland]
-          plugins = ["scratchpads"]
-
-          [scratchpads.console]
-          animation = "fromTop"
-          class = "com.ghostty.dropdown"
-          command = "ghostty --class=com.ghostty.dropdown --gtk-single-instance=false"
-          max_size = "90% 100%"
-          size = "75% 60%"
-        '';
-      };
 
       hypridle = {
         enable = true;
