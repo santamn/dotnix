@@ -111,14 +111,14 @@
         # Ghostty Quick Terminal (Dropdown)
         # Super + Alt + T でトグル表示
         # プロセス確認: 存在すればトグル、なければ起動して少し待ってから表示
-        bind = $mainMod ALT, T, exec, pgrep -f "ghostty --class=com.ghostty.quick" && hyprctl dispatch togglespecialworkspace quickterm || (ghostty --class=com.ghostty.quick & sleep 0.3; hyprctl dispatch togglespecialworkspace quickterm)
+        bind = $mainMod ALT, T, exec, pgrep -f "ghostty --title=quickterm" && hyprctl dispatch togglespecialworkspace quickterm || (ghostty --title=quickterm & sleep 0.2; hyprctl dispatch togglespecialworkspace quickterm)
 
         # クイックターミナルのウィンドウ設定（上部から40%の高さで表示）
-        windowrulev2 = float, class:^(com.ghostty.quick)$
-        windowrulev2 = size 100% 40%, class:^(com.ghostty.quick)$
-        windowrulev2 = move 0 0, class:^(com.ghostty.quick)$
-        windowrulev2 = workspace special:quickterm, class:^(com.ghostty.quick)$
-        windowrulev2 = animation slide, class:^(com.ghostty.quick)$
+        windowrulev2 = float, initialTitle:^(quickterm)$
+        windowrulev2 = size 100% 40%, initialTitle:^(quickterm)$
+        windowrulev2 = move 0 0, initialTitle:^(quickterm)$
+        windowrulev2 = workspace special:quickterm, initialTitle:^(quickterm)$
+        windowrulev2 = animation slide, initialTitle:^(quickterm)$
       '';
 
       hypridle = {

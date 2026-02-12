@@ -77,7 +77,7 @@
         $env.config = {
           show_banner: false, # Nushell 起動時のバナー表示を無効化
           completions: {
-            case_sensitive: ture  # 補完時に大文字小文字を区別する
+            case_sensitive: true  # 補完時に大文字小文字を区別する
             quick: true           # false にすると補完の自動選択を無効化
             partial: true         # false にすると部分的な補完を無効化
             algorithm: "fuzzy"    # "prefix" または "fuzzy" を指定可能
