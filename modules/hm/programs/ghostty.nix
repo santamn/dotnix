@@ -9,6 +9,10 @@
 
       font-size = 10;
       font-family = "FiraCode Nerd Font";
+
+      keybind = [
+        "ctrl+v=paste_from_clipboard"
+      ];
     };
   };
 }
