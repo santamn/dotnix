@@ -108,6 +108,8 @@
             tap_button_map = lmr
           }
         }
+
+        windowrulev2 = opacity 0.97 0.97,class:vesktop
       '';
 
       hypridle = {
