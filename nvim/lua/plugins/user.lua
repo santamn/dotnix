@@ -41,32 +41,17 @@ return {
         key = "o",
         desc = "Open Directory",
         action = function()
-          local get_dirs = function()
-            if vim.fn.executable "fd" == 1 then
-              return { "fd", "--type", "d", "--hidden", "--exclude", ".git" }
-            elseif vim.fn.executable "fdfind" == 1 then
-              return { "fdfind", "--type", "d", "--hidden", "--exclude", ".git" }
-            else
-              return { "find", ".", "-type", "d", "-not", "-path", "*/.*" }
-            end
-          end
-
-          require("telescope.builtin").find_files {
+          Snacks.picker.files {
+            cmd = vim.fn.executable "fd" == 1 and "fd" or "find",
+            args = vim.fn.executable "fd" == 1 and { "--type", "d", "--hidden", "--exclude", ".git" }
+              or { ".", "-type", "d", "-not", "-path", "*/.*" },
             prompt_title = "Open Directory",
-            find_command = get_dirs(),
-            previewer = false,
-            attach_mappings = function(prompt_bufnr, map)
-              local actions = require "telescope.actions"
-              local action_state = require "telescope.actions.state"
-              actions.select_default:replace(function()
-                actions.close(prompt_bufnr)
-                local selection = action_state.get_selected_entry()
-                if selection then
-                  vim.cmd("cd " .. selection[1])
-                  vim.cmd "Neotree show"
-                end
-              end)
-              return true
+            confirm = function(picker, item)
+              picker:close()
+              if item then
+                vim.fn.chdir(item.text)
+                vim.cmd "Neotree show"
+              end
             end,
           }
         end,
