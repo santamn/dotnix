@@ -49,7 +49,8 @@ return {
       rust_analyzer = {
         settings = {
           ["rust-analyzer"] = {
-            checkOnSave = { command = "clippy" },
+            checkOnSave = true,
+            check = { command = "clippy" },
             cargo = { allFeatures = true },
           },
         },
