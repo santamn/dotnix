@@ -9,11 +9,6 @@
   ];
 
   programs = {
-    nix-index = {
-      enable = true;
-      enableNushellIntegration = true;
-    };
-
     nushell = {
       enable = true;
       # ref: https://wiki.nixos.org/wiki/Nushell
