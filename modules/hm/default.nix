@@ -26,31 +26,6 @@
   # Packages
   # ===========================
   home.packages = with pkgs; [
-    # --- Development Tools ---
-    lazygit
-    helix # nushell の vi/vim/nano エイリアスで使用
-
-    # --- Language Runtimes (for AstroNvim) ---
-    nodejs # LSPs and REPL toggle terminal
-    gdu # go DiskUsage() - Disk usage analyzer
-    tree-sitter # Tree-sitter CLI for auto_install
-
-    # --- Mason Dependencies ---
-    gnumake
-    gcc
-    unzip
-    wget
-    gnutar
-    # すでにインストールされている
-    # curl
-    # gzip
-
-    # --- Nix Tools ---
-    nix-prefetch # Nix パッケージの SHA256 ハッシュ取得
-    nixpkgs-fmt # Nix コードフォーマッター
-    nil # Nix Language Server
-    statix # Nix 静的解析ツール
-
     # --- CLI tools ---
     wine64
 
