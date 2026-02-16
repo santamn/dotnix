@@ -44,6 +44,14 @@
     signal-desktop
   ];
 
+  programs = {
+    nix-index = {
+      enable = true;
+      enableNushellIntegration = true;
+      enableZshIntegration = true;
+    };
+  };
+
   # ===========================
   # XDG User Directories
   # ===========================
@@ -65,7 +73,6 @@
   # ===========================
   hydenix.hm = {
     enable = true;
-
     hyprland = {
       extraConfig = ''
         input {
@@ -105,17 +112,20 @@
             before_sleep_cmd = loginctl lock-session    # command to run before sleep
             after_sleep_cmd = hyprctl dispatch dpms on  # command to run after sleep
           }
+
           # 15分で画面をロック
           listener {
             timeout = 900                          # 15min
             on-timeout = loginctl lock-session     # lock screen when timeout has passed
           }
+
           # 20分で画面をオフ
           listener {
             timeout = 1200                         # 20min
             on-timeout = hyprctl dispatch dpms off # screen off when timeout has passed
             on-resume = hyprctl dispatch dpms on   # screen on when activity is detected after timeout has fired.
           }
+
           # 30分でサスペンド
           listener {
             timeout = 1800                         # 30min
