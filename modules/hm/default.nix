@@ -1,5 +1,6 @@
 {
   pkgs,
+  lib,
   inputs,
   config,
   ...
@@ -46,13 +47,11 @@
 
   programs = {
     nix-index = {
-      enable = false;
+      enable = lib.mkForce false;
       # enableNushellIntegration = true;
       # enableZshIntegration = true;
     };
-    command-not-found = {
-      enable = false;
-    };
+    command-not-found.enable = false;
   };
 
   # ===========================
