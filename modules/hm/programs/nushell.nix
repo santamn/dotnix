@@ -106,9 +106,8 @@
                 $env.CMD_START_TIME = null
             }],
           },
-        },
-        # PATH 環境変数の設定
-        # カスタムアプリケーションのパスを追加
+        }
+        # PATH の設定: カスタムアプリケーションのパスを追加
         $env.PATH = ($env.PATH | prepend ($env.HOME | path join ".apps") | uniq)
       '';
     };
