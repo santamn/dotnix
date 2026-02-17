@@ -40,13 +40,11 @@
         let zoxide_completer = {|spans| $spans | skip 1 | zoxide query -l ...$in | lines | where {|x| $x != $env.PWD} }
         # 複数の補完を組み合わせるための関数: エイリアス展開もここで行う
         let multiple_completers = {|spans|
-          # エイリアス補完: https://www.nushell.sh/cookbook/external_completers.html#alias-completions
-          let expanded_alias = scope aliases | where name == $spans.0 | get -o 0.expansion
-          let spans = if $expanded_alias != null {
-            $spans | skip 1 | prepend ($expanded_alias | split row ' ' | take 1)
-          } else {
-            $spans
-          }
+          # 1. エイリアスの展開先を取得 (get -i でエラー抑制しつつ取得)
+          let expanded = (scope aliases | where name == $spans.0 | get -o 0.expansion)
+          # 2. エイリアスだった場合、spansの0番目(コマンド名)を書き換える
+          let spans = if $expanded != null { $spans | update 0 ($expanded | split row ' ' | first) } else { $spans }
+          # 3. 実行
           match $spans.0 {
             __zoxide_z | __zoxide_zi => $zoxide_completer
             _ => $carapace_completer
@@ -75,7 +73,7 @@
             pre_prompt: [{ ||
               if ($env.CMD_DURATION_MS? != null) {
                 # 前回のコマンドの実行時間を取得
-                let duration = ($env.CMD_DURATION_MS | into int | into duration)
+                let duration = ($env.CMD_DURATION_MS | into int | into duration --unit ms)
                 # 10秒以上かかったら通知
                 if $duration > 10sec {
                   notify-send "コマンド完了" $"所要時間: ($duration)" -i terminal --urgency=normal
