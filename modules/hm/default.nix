@@ -70,6 +70,39 @@
   };
 
   # ===========================
+  # Waybar Clock Override
+  # ===========================
+  # 日付の表示フォーマットを YYYY-MM-DD に変更
+  home.file.".config/waybar/modules/clock.jsonc" = {
+    text = builtins.toJSON {
+      clock = {
+        format = "{:%R 󰃭 %Y-%m-%d}";
+        rotate = 0;
+        format-alt = "{:%I:%M %p}";
+        tooltip-format = "<span>{calendar}</span>";
+        calendar = {
+          mode = "month";
+          mode-mon-col = 3;
+          on-scroll = 1;
+          format = {
+            months = "<span color='#ffead3'><b>{}</b></span>";
+            weekdays = "<span color='#ffcc66'><b>{}</b></span>";
+            today = "<span color='#ff6699'><b>{}</b></span>";
+          };
+        };
+        actions = {
+          on-click-right = "mode";
+          on-click-forward = "tz_up";
+          on-click-backward = "tz_down";
+          on-scroll-up = "shift_up";
+          on-scroll-down = "shift_down";
+        };
+      };
+    };
+    force = true;
+  };
+
+  # ===========================
   # hydenix Module Options
   # ===========================
   hydenix.hm = {
