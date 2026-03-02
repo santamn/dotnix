@@ -12,6 +12,7 @@
     fcitx5 = {
       addons = with pkgs; [
         fcitx5-mozc
+        fcitx5-fluent
         qt6Packages.fcitx5-configtool
       ];
       waylandFrontend = true;
@@ -58,13 +59,13 @@
           classicui = {
             globalSection = {
               # 縦書き候補ウィンドウを有効にするか
-              "Vertical Candidate List" = false;
+              "Vertical Candidate List" = true;
               # システムのスケールに追従
               PerScreenDPI = true;
               # フォント設定 (お好みに合わせて変更してください)
-              Font = "Noto Sans CJK JP 12";
-              # テーマ (Catppuccinなどを入れている場合は "catppuccin-mocha" 等も指定可能)
-              Theme = "Default";
+              Font = "Noto Sans CJK JP 11";
+              # テーマ (FluentDark / FluentDark-solid / FluentLight / FluentLight-solid)
+              Theme = "FluentDark";
             };
           };
         };
