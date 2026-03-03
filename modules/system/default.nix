@@ -90,6 +90,7 @@
   services.fprintd.enable = true;
   security.pam.services = {
     sudo.fprintAuth = true; # sudo で指紋認証を有効化
+    hyprlock.fprintAuth = true; # ロック画面で指紋認証を有効化（失敗時はパスワードへフォールバック）
     login = {
       fprintAuth = false; # ログイン時は指紋認証を無効化
       enableGnomeKeyring = true; # キーリングの自動ロック解除
