@@ -44,15 +44,6 @@
     signal-desktop
   ];
 
-  # programs = {
-  #   nix-index = {
-  #     enable = lib.mkForce false;
-  #     # enableNushellIntegration = true;
-  #     # enableZshIntegration = true;
-  #   };
-  #   command-not-found.enable = false;
-  # };
-
   # ===========================
   # XDG User Directories
   # ===========================
@@ -103,6 +94,14 @@
   };
 
   # ===========================
+  # Hyprlock Layout Override
+  # ===========================
+  home.file.".config/hypr/hyprlock/theme.conf" = {
+    text = "source = ./SF Pro.conf\n";
+    force = true;
+  };
+
+  # ===========================
   # hydenix Module Options
   # ===========================
   hydenix.hm = {
@@ -133,9 +132,6 @@
           # 中クリックペーストを無効化
           middle_click_paste = false
         }
-
-        windowrulev2 = opacity 0.97 0.97, class:vesktop
-        windowrulev2 = opacity 1.0 1.0, class:zen-beta
       '';
 
       hypridle = {
@@ -171,7 +167,7 @@
 
     theme = {
       enable = true;
-      active = "Code Garden";
+      active = "Decay Green";
       themes = [
         "AncientAliens"
         "BlueSky"
