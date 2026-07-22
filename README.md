@@ -1,160 +1,91 @@
-<img align="right" width="75px" alt="NixOS" src="https://github.com/HyDE-Project/HyDE/blob/master/Source/assets/nixos.png?raw=true"/>
+# dotnix
 
-# NixOS configuration powered by hydenix
+NixOS + Home Manager による個人環境の設定リポジトリです。
+以前は [hydenix](https://github.com/richen604/hydenix) をベースにしていましたが、hydenix がメンテナンスモードに入ったため、素の NixOS + Home Manager + [stylix](https://github.com/nix-community/stylix) の構成に移行しました。
 
-[hydenix](https://github.com/richen604/hydenix) のテンプレートをベースにした NixOS の設定です。
+- デスクトップ: Hyprland (waybar / rofi / hyprlock / hypridle / dunst)
+- テーマ: stylix による一括テーマ管理 (配色は HyDE の "Decay Green" を移植)
+- エディタ: Neovim (AstroNvim ベース、設定は素の Lua、バイナリだけ Nix 管理)
+- シェル: zsh (ログイン) → nushell (対話) + starship
+- AI エージェント: [Herdr](https://herdr.dev/) で Claude Code などをターミナル内に並べて運用
 
-## apply configuration
+## 設定の適用
+
+このリポジトリを NixOS マシンの `~/dotnix` に置いて:
 
 ```bash
-sudo nixos-rebuild switch --flake .#hydenix
+sudo nixos-rebuild switch --flake ~/dotnix
 ```
 
-## upgrading
+ホスト名 (`thinkpad-x13-gen6` など) と同名の設定が自動で選択されます。
+
+## 更新 (flake inputs のアップデート)
 
 ```bash
+cd ~/dotnix
 nix flake update
-sudo nixos-rebuild switch --flake .#hydenix
+sudo nixos-rebuild switch --flake .
 ```
 
-## packages
+## hydenix 構成からの移行 (初回のみ)
 
-### desktop applications
+1. `nix flake update` を実行して flake.lock を新しい inputs で作り直す
+2. `sudo nixos-rebuild switch --flake ~/dotnix` を実行する
+3. 既存ファイルと衝突した場合は `.backup` を付けて退避される (エラーにはならない)
+4. 動作確認後、HyDE が残した古い設定 (`~/.config/hyde`, `~/.config/waybar/*.backup` など) は削除してよい
 
-- Discord (Vesktop)
-- Signal
-- Slack
-- Spotify
-- Zoom
+## ディレクトリ構成
+
+```
+flake.nix              # エントリポイント (inputs とホスト一覧)
+hosts/                 # ホスト (マシン) ごとの設定
+  thinkpad-x13-gen6/
+    default.nix        #   ホスト固有設定 (nixos-hardware, バッテリー閾値など)
+    hardware-configuration.nix
+modules/
+  nixos/               # 全ホスト共通のシステム設定 (boot, audio, 指紋認証, stylix ...)
+  home/                # ユーザ環境 (Home Manager) の設定
+    desktop/           #   Hyprland / waybar / rofi / hyprlock などのデスクトップ一式
+    programs/          #   個別アプリ (neovim, ghostty, nushell, zen-browser ...)
+home/
+  santamn.nix          # ユーザごとの Home Manager エントリポイント
+nvim/                  # Neovim の Lua 設定 (~/.config/nvim にシンボリックリンクされる)
+themes/                # stylix 用カラースキーム (decay-green.yaml)
+templates/             # プロジェクト用 devShell の雛形 (nix flake init -t ~/dotnix#rust)
+docs/                  # 構成の解説ドキュメント
+```
+
+## ドキュメント
+
+| ドキュメント | 内容 |
+|------|------|
+| [docs/architecture.md](docs/architecture.md) | 構成の全体像・テーマの変え方・指紋認証の設計・主要キーバインド |
+| [docs/new-machine.md](docs/new-machine.md) | 新しいマシンに同じ環境を作る手順 |
+| [docs/neovim.md](docs/neovim.md) | Neovim の運用方針 (Mason なし・devShell・Rust・Herdr) |
+
+## 主なパッケージ
+
+### デスクトップアプリ
+
 - Zen Browser
+- Thunderbird
+- Slack
+- Zoom 
+- Signal
+- Discord (Vesktop)
+- Spotify
 
-### development tools
+### 開発ツール
 
-- バージョン管理: git/lazygit
+- バージョン管理: git (+delta) / lazygit
 - エディタ: Neovim (AstroNvim)
-- shell 関係
-  - ターミナルエミュレータ: Ghostty 
-  - ログインシェル: zsh
-  - 対話型シェル: nushell
-  - プロンプト: starship
-- direnv: 開発環境ごとに devShell を自動切り替え
-  - プロジェクトごとに `.envrc` と `flake.nix` を配置すれば `cd` したら自動で開発環境を切り替える
+- ターミナル: Ghostty / Herdr
+- シェル: zsh → nushell + starship + carapace + zoxide
+- direnv + nix-direnv: プロジェクトごとに devShell を自動切り替え
+- Docker / Podman
 
-### utilities
+### ユーティリティ
 
-- wine: Windows アプリケーションを実行するための互換レイヤー
-
-## file structure
-
-### core configuration files
-
-| file | description |
-|------|-------------|
-| `flake.nix` | メインの flake の設定・エントリポイント |
-| `configuration.nix` | NixOS のシステム設定 |
-| `hardware-configuration.nix` | ハードウェア設定(自動生成) |
-
-### write your own modules
-
-> **note:** Use these directories to override or extend hydenix modules with your custom configurations.
-
-| directory | type | purpose |
-|-----------|------|---------|
-| `modules/hm/` | home manager | home-manager モジュールの設定 ( `hydenix.hm` のオプション設定も) |
-| `modules/system/` | nixos system | システムレベルのカスタム設定 ( `hydenix` のオプション設定も) |
-
-### directory tree
-
-```
-.
-├── README.md
-├── configuration.nix
-├── docs
-│   ├── assets
-│   │   └── option-search.png
-│   ├── faq.md
-│   ├── installation.md
-│   ├── options.md
-│   ├── troubleshooting.md
-│   └── upgrading.md
-├── flake.lock
-├── flake.nix
-├── hardware-configuration.nix
-└── modules
-    ├── hm
-    │   ├── default.nix
-    │   └── programs
-    │       ├── *.nix files
-    └── system
-        └── default.nix
-```
-
-## notes
-
-### wild linker
-
-Rust プロジェクトで高速な wild リンカーを使用する開発環境の設定例[^1]：
-
-```flake.nix
-{
-  inputs = {
-    nixpkgs.url = "github:nixos/nixpkgs/nixpkgs-unstable";
-    flake-utils.url = "github:numtide/flake-utils";
-    rust-overlay = {
-      url = "github:oxalica/rust-overlay";
-      inputs.nixpkgs.follows = "nixpkgs";
-    };
-    wild = {
-      url = "github:davidlattimore/wild";
-      inputs.nixpkgs.follows = "nixpkgs";
-    };
-  };
-
-  outputs =
-    {
-      nixpkgs,
-      flake-utils,
-      rust-overlay,
-      wild,
-      ...
-    }:
-    flake-utils.lib.eachDefaultSystem (
-      system:
-      let
-        pkgs = import nixpkgs {
-          inherit system;
-          overlays = [
-            rust-overlay.overlays.default
-            (import wild)
-          ];
-        };
-      in
-      {
-        devShells.default = pkgs.mkShell {
-          packages = [
-            pkgs.rust-bin.stable.latest.default
-            pkgs.wild
-          ];
-
-          # wildリンカーをデフォルトのリンカーとして使用
-          RUSTFLAGS = "-C linker=wild";
-        };
-      }
-    );
-}
-```
-
-[^1]: https://zenn.dev/asa1984/books/nix-hands-on/viewer/ch04-02-rust-project
-
-このように設定することで、プロジェクトの devShell 環境で wild リンカーが自動的に使用される。
-
-### fingerprint authentication
-
-`fprintd-enroll` コマンドを使って指紋を登録できる。
-
-## license 
-
-This project is licensed under the GNU General Public License v3.0 (GPL-3.0) - see the [LICENSE](LICENSE) file for details.
-
-Copyright (c) 2026 santamn
-Based on [hydenix](https://github.com/richen604/hydenix) by richen604.
+- bat / bottom / eza / fd / fzf / ripgrep
+- wine (Windows アプリ互換レイヤー)
+- KDE Connect (スマートフォン連携)

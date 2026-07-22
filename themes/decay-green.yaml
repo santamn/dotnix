@@ -1,0 +1,22 @@
+# HyDE の "Decay Green" テーマ (https://github.com/decaycs 由来) を
+# stylix 用の base16 スキームに移植したもの。
+# hydenix 時代の配色を維持するために使用している。
+# 別の配色にしたい場合は modules/nixos/theme.nix の base16Scheme を差し替えること。
+scheme: "Decay Green"
+author: "decaycs (base16 adaptation for stylix)"
+base00: "0d0f18" # 背景
+base01: "151720" # 明るい背景 (ステータスバーなど)
+base02: "1c1e27" # 選択範囲
+base03: "606a7b" # コメント
+base04: "8b9ab8" # 暗めの前景
+base05: "a5b6cf" # 前景 (本文)
+base06: "cbced3" # 明るい前景
+base07: "d0d3d8" # 最も明るい前景
+base08: "dd6777" # 赤
+base09: "e49d8b" # 橙
+base0A: "ecd3a0" # 黄
+base0B: "90ceaa" # 緑 (アクセント)
+base0C: "93cee9" # シアン
+base0D: "86aaec" # 青
+base0E: "c296eb" # 紫
+base0F: "c98b7b" # 茶

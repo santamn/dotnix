@@ -11,7 +11,7 @@ return {
     -- Configuration table of features provided by AstroLSP
     features = {
       codelens = true,        -- enable/disable codelens refresh on start
-      inlay_hints = false,    -- enable/disable inlay hints on start
+      inlay_hints = true,     -- VSCode 風に型や引数名のヒントをインラインで表示
       semantic_tokens = true, -- enable/disable semantic token highlighting
     },
     -- customize lsp formatting options
@@ -35,11 +35,14 @@ return {
       --   return true
       -- end
     },
-    -- enable servers that you already have installed without mason
+    -- Mason を使わず、PATH 上のバイナリで起動する LSP サーバー一覧
+    -- (常用のものは Nix の home.packages で、言語ツールチェーンは各プロジェクトの devShell で導入する)
+    -- NOTE: rust_analyzer をここに書いてはいけない。Rust は rustaceanvim が LSP を
+    --       管理しており、lspconfig 側でも起動すると二重起動して補完や診断が壊れる
     servers = {
-      "gopls",
-      -- "pyright"
-      "rust_analyzer",
+      "lua_ls",  -- Lua (この設定ファイル自身の編集用)
+      "nil_ls",  -- Nix
+      "gopls",   -- Go (devShell からバイナリを供給)
     },
     -- customize language server configuration options passed to `lspconfig`
     config = {

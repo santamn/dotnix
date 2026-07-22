@@ -2,7 +2,7 @@
 -- lua/plugins/rustaceanvim.lua
 return {
   "mrcjkb/rustaceanvim",
-  version = "^5", -- 推奨: バージョン5系を固定
+  version = "^9", -- v9 系に固定 (Neovim >= 0.12 が必要。nixpkgs unstable は 0.12 系)
   lazy = false,   -- ファイルタイプで自動起動するため false で良い
   init = function()
     -- rustaceanvim は vim.g.rustaceanvim に設定テーブルを代入する方式で設定を行う
@@ -21,11 +21,11 @@ return {
 
       -- LSPサーバー (rust-analyzer) の設定
       server = {
-        -- Flake環境の rust-analyzer バイナリを強制的に使用
+        -- devShell (direnv) が PATH に載せた rust-analyzer を使用
         cmd = function()
           local ra_binary = vim.fn.exepath("rust-analyzer")
           if ra_binary == "" then
-            -- パスが見つからない場合はmasonなどをフォールバック（通常はここに来ないはず）
+            -- PATH に無い場合はそのままコマンド名を返す (起動失敗時のエラーメッセージ用)
             return { "rust-analyzer" }
           end
           return { ra_binary }
