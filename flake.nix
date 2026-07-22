@@ -1,5 +1,5 @@
 {
-  description = "NixOS + Home Manager configuration (standalone, formerly based on hydenix)";
+  description = "NixOS configuration";
 
   inputs = {
     nixpkgs.url = "github:nixos/nixpkgs/nixos-unstable";
@@ -52,18 +52,17 @@
 
     thinkpad-x13-gen6 = mkHost "thinkpad-x13-gen6";
   in {
+    # `nixos-rebuild switch --flake .` はホスト名と同名の設定を自動選択するため、
+    # 通常はホスト名の指定は不要。明示指定したい場合は `.#thinkpad-x13-gen6` のようにキー名を渡す
     nixosConfigurations = {
       inherit thinkpad-x13-gen6;
-      # `nixos-rebuild switch --flake .` はホスト名と同名の設定を自動選択するため、
-      # 通常はホスト名の指定は不要。default は明示的に使いたい場合の別名
-      default = thinkpad-x13-gen6;
     };
 
     # プロジェクトごとの devShell の雛形: `nix flake init -t ~/dotnix#rust` で展開できる
     templates = {
       rust = {
         path = ./templates/rust;
-        description = "Rust 開発環境 (rust-analyzer / clippy / codelldb 込み)";
+        description = "Rust 開発環境 (rust-analyzer / clippy / codelldb)";
       };
     };
   };

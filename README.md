@@ -1,23 +1,21 @@
 # dotnix
 
-NixOS + Home Manager による個人環境の設定リポジトリです。
-以前は [hydenix](https://github.com/richen604/hydenix) をベースにしていましたが、hydenix がメンテナンスモードに入ったため、素の NixOS + Home Manager + [stylix](https://github.com/nix-community/stylix) の構成に移行しました。
+NixOS + Home Manager による環境設定。以前は [hydenix](https://github.com/richen604/hydenix) をベースにしていたが、hydenix はメンテナンスモードになったため、素の NixOS + Home Manager + [stylix](https://github.com/nix-community/stylix) の構成に移行。
 
 - デスクトップ: Hyprland (waybar / rofi / hyprlock / hypridle / dunst)
 - テーマ: stylix による一括テーマ管理 (配色は HyDE の "Decay Green" を移植)
-- エディタ: Neovim (AstroNvim ベース、設定は素の Lua、バイナリだけ Nix 管理)
-- シェル: zsh (ログイン) → nushell (対話) + starship
-- AI エージェント: [Herdr](https://herdr.dev/) で Claude Code などをターミナル内に並べて運用
+- エディタ: Neovim (AstroNvim)
+- シェル: nushell
 
 ## 設定の適用
 
-このリポジトリを NixOS マシンの `~/dotnix` に置いて:
+このリポジトリを NixOS マシンの `~/dotnix` に置いて次を実行:
 
 ```bash
 sudo nixos-rebuild switch --flake ~/dotnix
 ```
 
-ホスト名 (`thinkpad-x13-gen6` など) と同名の設定が自動で選択されます。
+ホスト名 (`thinkpad-x13-gen6` など) と同名の設定が自動で選択される。
 
 ## 更新 (flake inputs のアップデート)
 
@@ -57,35 +55,6 @@ docs/                  # 構成の解説ドキュメント
 
 ## ドキュメント
 
-| ドキュメント | 内容 |
-|------|------|
-| [docs/architecture.md](docs/architecture.md) | 構成の全体像・テーマの変え方・指紋認証の設計・主要キーバインド |
-| [docs/new-machine.md](docs/new-machine.md) | 新しいマシンに同じ環境を作る手順 |
-| [docs/neovim.md](docs/neovim.md) | Neovim の運用方針 (Mason なし・devShell・Rust・Herdr) |
-
-## 主なパッケージ
-
-### デスクトップアプリ
-
-- Zen Browser
-- Thunderbird
-- Slack
-- Zoom 
-- Signal
-- Discord (Vesktop)
-- Spotify
-
-### 開発ツール
-
-- バージョン管理: git (+delta) / lazygit
-- エディタ: Neovim (AstroNvim)
-- ターミナル: Ghostty / Herdr
-- シェル: zsh → nushell + starship + carapace + zoxide
-- direnv + nix-direnv: プロジェクトごとに devShell を自動切り替え
-- Docker / Podman
-
-### ユーティリティ
-
-- bat / bottom / eza / fd / fzf / ripgrep
-- wine (Windows アプリ互換レイヤー)
-- KDE Connect (スマートフォン連携)
+- [docs/architecture.md](docs/architecture.md): 構成の全体像・テーマの変え方・指紋認証の設計・主要キーバインド
+- [docs/new-machine.md](docs/new-machine.md): 新しいマシンに同じ環境を作る手順
+- [docs/neovim.md](docs/neovim.md): Neovim の運用方針 (Mason なし・devShell・Rust・Herdr)

@@ -50,7 +50,6 @@ cp /etc/nixos/hardware-configuration.nix hosts/$HOST/
 ```nix
 nixosConfigurations = {
   inherit thinkpad-x13-gen6;
-  default = thinkpad-x13-gen6;
   my-new-machine = mkHost "my-new-machine"; # ← 追加
 };
 ```
