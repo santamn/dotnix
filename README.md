@@ -1,6 +1,6 @@
 # dotnix
 
-NixOS + Home Manager による環境設定。以前は [hydenix](https://github.com/richen604/hydenix) をベースにしていたが、hydenix はメンテナンスモードになったため、素の NixOS + Home Manager + [stylix](https://github.com/nix-community/stylix) の構成に移行。
+NixOS + Home Manager によるOS環境設定。以前は [hydenix](https://github.com/richen604/hydenix) をベースにしていたが、hydenix はメンテナンスモードになったため、素の NixOS + Home Manager + [stylix](https://github.com/nix-community/stylix) の構成に移行。
 
 - デスクトップ: Hyprland (waybar / rofi / hyprlock / hypridle / dunst)
 - テーマ: stylix による一括テーマ管理 (配色は HyDE の "Decay Green" を移植)
@@ -56,6 +56,6 @@ sudo nixos-rebuild switch --flake .
 
 ## ドキュメント
 
-- [docs/architecture.md](docs/architecture.md): 構成の全体像・テーマの変え方・指紋認証の設計・主要キーバインド
-- [docs/new-machine.md](docs/new-machine.md): 新しいマシンに同じ環境を作る手順
-- [docs/neovim.md](docs/neovim.md): Neovim の運用方針 (Mason なし・devShell・Rust・Herdr)
+- [architecture.md](docs/architecture.md): 構成の全体像・テーマの変え方・指紋認証の設計・主要キーバインド
+- [new-machine.md](docs/new-machine.md): 新しいマシンに同じ環境を作る手順
+- [neovim.md](docs/neovim.md): Neovim の運用方針 (Mason なし・devShell・Rust・Herdr)
