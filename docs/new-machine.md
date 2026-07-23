@@ -14,8 +14,7 @@ git clone https://github.com/<あなたのリポジトリ>/dotnix.git ~/dotnix
 cd ~/dotnix
 ```
 
-> **NOTE**: Neovim 設定のシンボリックリンクなどが `~/dotnix` を前提にしているため、
-> 置き場所は `~/dotnix` にすること (変える場合は `home/santamn.nix` の `nixConfigPath` を修正)。
+> **NOTE**: Neovim 設定のシンボリックリンクなどが `~/dotnix` を前提にしているため、置き場所は `~/dotnix` にすること。別の場所に置きたい場合は `hosts/<ホスト名>/default.nix` に `home-manager.users.<ユーザ名>.dotfiles.path = "/path/to/dotnix";` を書いて既定値を上書きする ([modules/home/dotfiles.nix](../modules/home/dotfiles.nix))。
 
 ## 3. ホスト用ディレクトリを作る
 

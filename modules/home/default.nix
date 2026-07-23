@@ -2,6 +2,7 @@
 {...}: {
   imports = [
     ./desktop
+    ./dotfiles.nix
     ./packages.nix
     ./theme.nix
     ./xdg.nix

@@ -35,7 +35,7 @@
   };
 
   outputs = {nixpkgs, ...} @ inputs: let
-    # ホスト1台分の NixOS 設定を組み立てるヘルパー
+    # ホスト1台分の NixOS 設定を組み立てるヘルパー関数
     # 新しいマシンを追加するときは hosts/<name>/ を作り、下の nixosConfigurations に1行足すだけでよい
     # (詳細は docs/new-machine.md を参照)
     mkHost = hostName:
@@ -49,13 +49,11 @@
           {networking.hostName = hostName;}
         ];
       };
-
-    thinkpad-x13-gen6 = mkHost "thinkpad-x13-gen6";
   in {
     # `nixos-rebuild switch --flake .` はホスト名と同名の設定を自動選択するため、
     # 通常はホスト名の指定は不要。明示指定したい場合は `.#thinkpad-x13-gen6` のようにキー名を渡す
     nixosConfigurations = {
-      inherit thinkpad-x13-gen6;
+      thinkpad-x13-gen6 = mkHost "thinkpad-x13-gen6";
     };
 
     # プロジェクトごとの devShell の雛形: `nix flake init -t ~/dotnix#rust` で展開できる

@@ -10,7 +10,6 @@
 {
   config,
   pkgs,
-  nixConfigPath,
   ...
 }: let
   # nvim-treesitter の全言語パーサを1つのディレクトリに集約したもの
@@ -58,7 +57,7 @@ in {
   # ~/.config/nvim をリポジトリの nvim/ への直リンクに:
   # どちらを編集しても即座に反映される (rebuild 不要)
   xdg.configFile."nvim".source =
-    config.lib.file.mkOutOfStoreSymlink "${nixConfigPath}/nvim";
+    config.lib.file.mkOutOfStoreSymlink "${config.dotfiles.path}/nvim";
 
   # Tree-sitter パーサを Neovim の runtimepath (~/.local/share/nvim/site) に配置する。
   # nvim-treesitter プラグイン本体は lazy.nvim が管理するが、パーサの実体は
