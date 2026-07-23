@@ -35,22 +35,23 @@ sudo nixos-rebuild switch --flake .
 ## ディレクトリ構成
 
 ```
-flake.nix              # エントリポイント (inputs とホスト一覧)
-hosts/                 # ホスト (マシン) ごとの設定
-  thinkpad-x13-gen6/
-    default.nix        #   ホスト固有設定 (nixos-hardware, バッテリー閾値など)
-    hardware-configuration.nix
-modules/
-  nixos/               # 全ホスト共通のシステム設定 (boot, audio, 指紋認証, stylix ...)
-  home/                # ユーザ環境 (Home Manager) の設定
-    desktop/           #   Hyprland / waybar / rofi / hyprlock などのデスクトップ一式
-    programs/          #   個別アプリ (neovim, ghostty, nushell, zen-browser ...)
-home/
-  santamn.nix          # ユーザごとの Home Manager エントリポイント
-nvim/                  # Neovim の Lua 設定 (~/.config/nvim にシンボリックリンクされる)
-themes/                # stylix 用カラースキーム (decay-green.yaml)
-templates/             # プロジェクト用 devShell の雛形 (nix flake init -t ~/dotnix#rust)
-docs/                  # 構成の解説ドキュメント
+.
+├── flake.nix                 # エントリポイント (inputs とホスト一覧)
+├── hosts/                    # ホスト (マシン) ごとの設定
+│   └── thinkpad-x13-gen6/
+│       ├── default.nix       # ホスト固有設定 (nixos-hardware, バッテリー閾値など)
+│       └── hardware-configuration.nix
+├── modules/
+│   ├── nixos/                # 全ホスト共通のシステム設定 (boot, audio, 指紋認証, stylix ...)
+│   └── home/                 # ユーザ環境 (Home Manager) の設定
+│       ├── desktop/          # Hyprland / waybar / rofi / hyprlock などのデスクトップ一式
+│       └── programs/         # 個別アプリ (neovim, ghostty, nushell, zen-browser ...)
+├── home/
+│   └── santamn.nix           # ユーザごとの Home Manager エントリポイント
+├── nvim/                     # Neovim の Lua 設定 (~/.config/nvim にシンボリックリンクされる)
+├── themes/                   # stylix 用カラースキーム (decay-green.yaml)
+├── templates/                # プロジェクト用 devShell の雛形 (nix flake init -t ~/dotnix#rust)
+└── docs/                     # 構成の解説ドキュメント
 ```
 
 ## ドキュメント
