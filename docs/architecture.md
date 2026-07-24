@@ -25,12 +25,12 @@ flake.nix
 | hydenix / HyDE の機能 | 置き換え先 |
 |---|---|
 | Hyprland 設定一式 | `wayland.windowManager.hyprland` ([modules/home/desktop/hyprland.nix](../modules/home/desktop/hyprland.nix)) |
-| テーマシステム (wallbash) | stylix ([modules/nixos/theme.nix](../modules/nixos/theme.nix) + [themes/decay-green.yaml](../themes/decay-green.yaml)) |
+| テーマシステム (wallbash) | stylix ([modules/nixos/theme.nix](../modules/nixos/theme.nix)、壁紙から配色を自動生成) |
 | waybar 設定 | `programs.waybar` ([modules/home/desktop/waybar.nix](../modules/home/desktop/waybar.nix)) |
 | rofi ランチャー | `programs.rofi` (テーマは stylix が生成) |
 | hyprlock レイアウト (SF Pro) | `programs.hyprlock` の自前レイアウト ([modules/home/desktop/hyprlock.nix](../modules/home/desktop/hyprlock.nix)) |
 | hypridle | `services.hypridle` |
-| dunst (通知) | `services.dunst` (配色は stylix) |
+| mako (通知) | `services.mako` (配色は stylix) |
 | SDDM + astronaut テーマ | 同じものを直接定義 ([modules/nixos/desktop.nix](../modules/nixos/desktop.nix)) |
 | スクリーンショットスクリプト | hyprshot + satty + hyprpicker |
 | クリップボード履歴 | `services.cliphist` + rofi (Super+V) |
@@ -39,13 +39,12 @@ flake.nix
 
 ## テーマの変え方
 
-配色は [themes/decay-green.yaml](../themes/decay-green.yaml) (HyDE の Decay Green を base16 に移植したもの) で決まっている。変更する場合は [modules/nixos/theme.nix](../modules/nixos/theme.nix) で:
+配色は `image` に指定した壁紙から stylix が自動生成する (これが stylix の本来のモード)。変更する場合は [modules/nixos/theme.nix](../modules/nixos/theme.nix) で:
 
-- **別のスキームにする**: `base16Scheme` を [tinted-theming/schemes](https://github.com/tinted-theming/schemes) 収録の yaml や自作 yaml に差し替える
-- **壁紙から自動生成する**: `base16Scheme` の行を削除すると `image` に指定した壁紙から配色が生成される (これが stylix の本来のモード)
-- **壁紙を変える**: `image` を手元の画像パスに差し替える
+- **壁紙を変える**: `image` を手元の画像パスに差し替える (配色も壁紙に合わせて変わる)
+- **固定スキームにする**: `base16Scheme` に [themes/decay-green.yaml](../themes/decay-green.yaml) (HyDE の Decay Green の移植) や [tinted-theming/schemes](https://github.com/tinted-theming/schemes) 収録の yaml を指定すると、壁紙によらずそのスキームが使われる
 
-waybar / hyprland / hyprlock は `config.lib.stylix.colors` 経由で同じスキームを参照しているので、yaml を替えるだけで全体の配色が追従する。
+waybar / hyprland / hyprlock は `config.lib.stylix.colors` 経由で同じスキームを参照しているので、壁紙 (やスキーム) を替えるだけで全体の配色が追従する。
 
 ## 指紋認証の設計 ([modules/nixos/fingerprint.nix](../modules/nixos/fingerprint.nix))
 

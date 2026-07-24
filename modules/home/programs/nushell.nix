@@ -74,8 +74,8 @@
               if ($env.CMD_DURATION_MS? != null) {
                 # 前回のコマンドの実行時間を取得
                 let duration = ($env.CMD_DURATION_MS | into int | into duration --unit ms)
-                # 10秒以上かかったら通知
-                if $duration > 10sec {
+                # 5秒以上かかったら通知
+                if $duration > 5sec {
                   notify-send "コマンド完了" $"所要時間: ($duration)" -i terminal --urgency=normal
                   try { gsound-play -i complete }
                 }

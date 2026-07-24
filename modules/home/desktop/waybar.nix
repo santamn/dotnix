@@ -1,5 +1,5 @@
 # ステータスバー (waybar)
-# 配色は stylix のスキーム (themes/decay-green.yaml) から取得している
+# 配色は stylix のスキーム (壁紙から自動生成) から取得している
 {config, ...}: let
   colors = config.lib.stylix.colors.withHashtag;
 in {

@@ -2,7 +2,7 @@
 
 NixOS + Home Manager によるOS環境設定。以前は [hydenix](https://github.com/richen604/hydenix) をベースにしていたが、hydenix はメンテナンスモードになったため、素の NixOS + Home Manager + [stylix](https://github.com/nix-community/stylix) の構成に移行。
 
-- デスクトップ: Hyprland (waybar / rofi / hyprlock / hypridle / dunst)
+- デスクトップ: Hyprland (waybar / rofi / hyprlock / hypridle / mako)
 - テーマ: stylix による一括テーマ管理 (配色は HyDE の "Decay Green" を移植)
 - エディタ: Neovim (AstroNvim)
 - シェル: nushell

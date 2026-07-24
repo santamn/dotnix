@@ -5,7 +5,7 @@
   lib,
   ...
 }: let
-  # stylix のカラースキーム (themes/decay-green.yaml) を "#" なしの16進で参照できる
+  # stylix のカラースキーム (壁紙から自動生成) を "#" なしの16進で参照できる
   colors = config.lib.stylix.colors;
 
   # ワークスペース 1〜10 の移動・ウィンドウ送りバインドを生成
@@ -86,7 +86,7 @@ in {
         gaps_in = 3;
         gaps_out = 8;
         border_size = 2;
-        # Decay Green のボーダー配色 (アクティブ: 緑→黄 / 非アクティブ: 青→シアン)
+        # ボーダー配色 (アクティブ: base0B→base0A / 非アクティブ: base0D→base0C のグラデーション)
         "col.active_border" = "rgba(${colors.base0B}ff) rgba(${colors.base0A}ff) 45deg";
         "col.inactive_border" = "rgba(${colors.base0D}cc) rgba(${colors.base0C}cc) 45deg";
         layout = "dwindle";
