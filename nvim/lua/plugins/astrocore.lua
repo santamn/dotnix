@@ -41,7 +41,7 @@ return {
       opt = {                      -- vim.opt.<key>
         relativenumber = true,     -- sets vim.opt.relativenumber
         number = true,             -- sets vim.opt.number
-        spell = false,             -- sets vim.opt.spell
+        spell = true,              -- sets vim.opt.spell
         signcolumn = "yes",        -- sets vim.opt.signcolumn to yes
         wrap = false,              -- sets vim.opt.wrap
         clipboard = "unnamedplus", -- sync clipboard with OS

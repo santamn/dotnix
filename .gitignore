@@ -3,3 +3,4 @@
 result
 .git-hooks
 *.DS_Store
+.vscode/

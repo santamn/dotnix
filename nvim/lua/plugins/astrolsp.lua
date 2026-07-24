@@ -113,7 +113,16 @@ return {
                 and vim.lsp.semantic_tokens ~= nil
           end,
         },
-        -- TODO: 関数名や変数名を意味的にまとめて改名するリネーム機能
+        -- LSP による意味ベースのリネーム: カーソル下のシンボルの全参照を一括改名する
+        -- inc-rename.nvim (plugins/inc-rename.lua) を使い、入力中に結果をライブプレビューする
+        ["<Leader>lr"] = {
+          function()
+            return ":IncRename " .. vim.fn.expand("<cword>")
+          end,
+          expr = true, -- 返り値のコマンド文字列をコマンドラインに展開する
+          desc = "Rename current symbol",
+          cond = "textDocument/rename",
+        },
       },
     },
     -- A custom `on_attach` function to be run after the default `on_attach` function
