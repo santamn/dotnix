@@ -49,7 +49,7 @@
     };
 
     # Tela Circle (green) アイコンテーマ: HyDE の Decay Green が使っていたもの
-    iconTheme = {
+    icons = {
       enable = true;
       package = pkgs.tela-circle-icon-theme.override {colorVariants = ["green"];};
       dark = "Tela-circle-green-dark";

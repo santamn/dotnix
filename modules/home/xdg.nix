@@ -3,6 +3,9 @@
   xdg.userDirs = {
     enable = true;
     createDirectories = true;
+    # XDG_DESKTOP_DIR などをセッション環境変数としても設定する
+    # (26.05 で既定値が false に変わるため明示。スクリプトからの参照を壊さないよう true を維持)
+    setSessionVariables = true;
     desktop = "${config.home.homeDirectory}/Desktop";
     documents = "${config.home.homeDirectory}/Documents";
     download = "${config.home.homeDirectory}/Downloads";

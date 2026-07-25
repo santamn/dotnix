@@ -23,6 +23,15 @@ in {
     defaultEditor = true; # EDITOR=nvim を設定
     viAlias = true;
     vimAlias = true;
+
+    # Home Manager もラッパ用の初期化 Lua (プロバイダ無効化など) を生成するが、
+    # それを ~/.config/nvim/init.lua に書き出すと下のシンボリックリンクと衝突して
+    # activation が失敗する。nvim 起動時の --cmd 経由で読ませることで両立させる
+    sideloadInitLua = true;
+
+    # Ruby / Python3 のリモートプラグインは使わないため無効化 (26.05 以降の既定値)
+    withRuby = false;
+    withPython3 = false;
   };
 
   home.packages = with pkgs; [

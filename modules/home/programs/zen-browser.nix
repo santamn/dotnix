@@ -3,17 +3,23 @@
   inputs,
   config,
   ...
-}: {
+}: let
+  # Home Manager が管理する Firefox プロファイルの置き場所
+  # 旧来の ~/.mozilla/firefox ではなく XDG 準拠の位置に置く
+  # (Home Manager 26.05 の新既定と同じ。~/.zen/profiles.ini からも参照するため
+  #  二重管理にならないようここを唯一の定義とする)
+  firefoxConfigPath = "${config.xdg.configHome}/mozilla/firefox";
+in {
   # ===========================
   # Zen Browser Configuration
   # ===========================
-  # Zen Browser uses ~/.zen directory by default, but Home Manager manages ~/.mozilla/firefox.
-  # We create a profiles.ini in ~/.zen that points to the Home Manager managed profile.
+  # Zen Browser は既定で ~/.zen を使うが、プロファイルの中身は Home Manager が
+  # 上記 firefoxConfigPath で管理する。~/.zen/profiles.ini からそこを指させる
   home.file.".zen/profiles.ini".text = ''
     [Profile0]
     Name=default
     IsRelative=0
-    Path=${config.home.homeDirectory}/.mozilla/firefox/default
+    Path=${firefoxConfigPath}/default
     Default=1
 
     [General]
@@ -24,6 +30,9 @@
   programs.firefox = {
     enable = true;
     package = inputs.zen-browser.packages."${pkgs.stdenv.hostPlatform.system}".default;
+
+    # プロファイルの置き場所 (既定値は stateVersion 依存で変わるため明示する)
+    configPath = firefoxConfigPath;
 
     profiles.default = {
       id = 0;

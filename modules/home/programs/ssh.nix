@@ -4,11 +4,10 @@
     enableDefaultConfig = false;
 
     # よく使うホストの設定
-    matchBlocks = {
-      "github.com" = {
-        identityFile = "~/.ssh/github";
-        user = "git";
-      };
+    # 属性名がそのまま Host パターンになり、値は ssh_config(5) のディレクティブ名で書く
+    settings."github.com" = {
+      IdentityFile = "~/.ssh/github";
+      User = "git";
     };
   };
 }
