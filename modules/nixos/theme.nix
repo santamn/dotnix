@@ -38,6 +38,7 @@
       sizes = {
         terminal = 10; # 旧 ghostty 設定の font-size を踏襲
         applications = 11;
+        popups = 11; # fcitx5 の候補ウィンドウなど (旧 fcitx5 設定の Font サイズを踏襲)
       };
     };
 
