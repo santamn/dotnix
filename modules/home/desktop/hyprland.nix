@@ -373,8 +373,10 @@ in {
           disable_splash_rendering = true;
           # 中クリックペーストを無効化
           middle_click_paste = false;
-          vfr = true; # 画面更新がないときの消費電力を抑える
         };
+
+        # vfr は 0.55 で misc から debug に移動した (本番環境向けの変数ではないため)
+        debug.vfr = true; # 画面更新がないときの消費電力を抑える
       };
 
       # アニメーションの補間曲線 (旧 bezier)。hl.animation より先に出力される
