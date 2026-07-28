@@ -94,13 +94,14 @@ in {
   };
 
   # Set Zen Browser as default browser
+  # (zen-browser flake の default = beta の desktop ファイル名は zen-beta.desktop)
   xdg.mimeApps.enable = true;
   xdg.mimeApps.defaultApplications = {
-    "text/html" = "zen.desktop";
-    "text/xml" = "zen.desktop";
-    "application/xhtml+xml" = "zen.desktop";
-    "application/vnd.mozilla.xul+xml" = "zen.desktop";
-    "x-scheme-handler/http" = "zen.desktop";
-    "x-scheme-handler/https" = "zen.desktop";
+    "text/html" = "zen-beta.desktop";
+    "text/xml" = "zen-beta.desktop";
+    "application/xhtml+xml" = "zen-beta.desktop";
+    "application/vnd.mozilla.xul+xml" = "zen-beta.desktop";
+    "x-scheme-handler/http" = "zen-beta.desktop";
+    "x-scheme-handler/https" = "zen-beta.desktop";
   };
 }

@@ -27,7 +27,8 @@
   terminal = "ghostty";
   editor = "ghostty -e nvim";
   explorer = "dolphin";
-  browser = "zen";
+  # zen-browser flake の default (beta) はバイナリ名・desktop ファイル名とも "zen-beta"
+  browser = "zen-beta";
 
   # スクラッチパッドとして使う special workspace の名前
   # (Lua API の toggle_special は名前を要求するため、旧設定の無名 special から名前付きに変えている)
@@ -113,7 +114,8 @@
     (mkEntry "ウィンドウ管理" [mainMod] "F" ''hl.dsp.window.fullscreen({ mode = "fullscreen" })'' "全画面表示を切り替える")
     (mkEntry "ウィンドウ管理" [mainMod] "L" (execCmd "loginctl lock-session") "画面をロックする")
     (mkEntry "ウィンドウ管理" [mainMod "SHIFT"] "F" ''hl.dsp.window.pin({ action = "toggle" })'' "最前面に固定する")
-    (mkEntry "ウィンドウ管理" ["CTRL" "ALT"] "Delete" (execCmd "wlogout") "ログアウトメニューを開く")
+    # 6ボタン横一列 (HyDE style_1 相当、スタイルは desktop/wlogout.nix)
+    (mkEntry "ウィンドウ管理" ["CTRL" "ALT"] "Delete" (execCmd "pkill -x wlogout || wlogout -b 6 -p layer-shell") "ログアウトメニューを開く")
     (mkEntry "ウィンドウ管理" [mainMod] "J" ''hl.dsp.layout("togglesplit")'' "分割方向を切り替える")
 
     (mkEntry "グループ内の移動" [mainMod "CTRL"] "H" "hl.dsp.group.prev()" "グループ内の前のウィンドウへ")
@@ -136,16 +138,19 @@
     (mkEntry "アプリ起動" [mainMod] "B" (execCmd browser) "ブラウザを開く")
     (mkEntry "アプリ起動" ["CTRL" "SHIFT"] "Escape" (execCmd "${terminal} -e btm") "システムモニタを開く")
 
-    (mkEntry "rofi メニュー" [mainMod] "A" (execCmd "pkill -x rofi || rofi -show drun") "アプリランチャーを開く")
-    (mkEntry "rofi メニュー" [mainMod] "Tab" (execCmd "pkill -x rofi || rofi -show window") "ウィンドウ切り替えメニューを開く")
-    (mkEntry "rofi メニュー" [mainMod "SHIFT"] "E" (execCmd "pkill -x rofi || rofi -show filebrowser") "ファイル検索を開く")
-    (mkEntry "rofi メニュー" [mainMod] "V" (execCmd "pkill -x rofi || cliphist list | rofi -dmenu -p 󰅍 | cliphist decode | wl-copy") "クリップボード履歴を開く")
+    # ランチャー系は HyDE style_1 相当のテーマ、dmenu 系はドロップダウン型テーマを使う
+    # (テーマ定義は desktop/rofi.nix)
+    (mkEntry "rofi メニュー" [mainMod] "A" (execCmd "pkill -x rofi || rofi -show drun -theme hyde-launcher") "アプリランチャーを開く")
+    (mkEntry "rofi メニュー" [mainMod] "Tab" (execCmd "pkill -x rofi || rofi -show window -theme hyde-launcher") "ウィンドウ切り替えメニューを開く")
+    (mkEntry "rofi メニュー" [mainMod "SHIFT"] "E" (execCmd "pkill -x rofi || rofi -show filebrowser -theme hyde-launcher") "ファイル検索を開く")
+    (mkEntry "rofi メニュー" [mainMod] "V" (execCmd "pkill -x rofi || cliphist list | rofi -dmenu -p 󰅍 -theme hyde-dropdown | cliphist decode | wl-copy") "クリップボード履歴を開く")
+    (mkEntry "rofi メニュー" [mainMod "SHIFT"] "V" (execCmd "pkill -x rofi || cliphist list | rofi -dmenu -p 󰆴 -theme hyde-dropdown | cliphist delete") "クリップボード履歴から削除")
     (mkEntry "rofi メニュー" [mainMod] "comma" (execCmd "rofimoji") "絵文字ピッカーを開く")
 
-    (mkEntry "スクリーンショット・カラーピッカー" [mainMod] "P" (execCmd "hyprshot -m region") "範囲を選択して撮影")
-    (mkEntry "スクリーンショット・カラーピッカー" [mainMod "CTRL"] "P" (execCmd "hyprshot -m region -z") "画面を停止して範囲を撮影")
-    (mkEntry "スクリーンショット・カラーピッカー" [mainMod "ALT"] "P" (execCmd "hyprshot -m output -m active") "アクティブモニタを撮影")
-    (mkEntry "スクリーンショット・カラーピッカー" [] "Print" (execCmd "hyprshot -m output") "モニタ全体を撮影")
+    (mkEntry "スクリーンショット・カラーピッカー" [mainMod] "P" (execCmd "${screenshot}/bin/hypr-screenshot s") "範囲を選択して撮影し注釈を付ける")
+    (mkEntry "スクリーンショット・カラーピッカー" [mainMod "CTRL"] "P" (execCmd "${screenshot}/bin/hypr-screenshot sf") "画面を停止して範囲を撮影し注釈を付ける")
+    (mkEntry "スクリーンショット・カラーピッカー" [mainMod "ALT"] "P" (execCmd "${screenshot}/bin/hypr-screenshot m") "アクティブモニタを撮影し注釈を付ける")
+    (mkEntry "スクリーンショット・カラーピッカー" [] "Print" (execCmd "${screenshot}/bin/hypr-screenshot p") "モニタ全体を撮影して保存")
     (mkEntry "スクリーンショット・カラーピッカー" [mainMod "SHIFT"] "P" (execCmd "hyprpicker -an") "色を取得してクリップボードへコピー")
 
     (mkEntry "ワークスペース" [mainMod "CTRL"] "Right" ''hl.dsp.focus({ workspace = "r+1" })'' "次のワークスペースへ")
@@ -179,9 +184,9 @@
 
   # メディア・音量 (ロック画面でも効く、locked フラグ)
   mediaEntries = [
-    (mkEntry "メディア・音量" [] "F10" (execCmd "wpctl set-mute @DEFAULT_AUDIO_SINK@ toggle") "ミュート切り替え")
-    (mkEntry "メディア・音量" [] "XF86AudioMute" (execCmd "wpctl set-mute @DEFAULT_AUDIO_SINK@ toggle") "ミュート切り替え")
-    (mkEntry "メディア・音量" [] "XF86AudioMicMute" (execCmd "wpctl set-mute @DEFAULT_AUDIO_SOURCE@ toggle") "マイクミュート切り替え")
+    (mkEntry "メディア・音量" [] "F10" (execCmd "${osd}/bin/hypr-osd volume mute") "ミュート切り替え")
+    (mkEntry "メディア・音量" [] "XF86AudioMute" (execCmd "${osd}/bin/hypr-osd volume mute") "ミュート切り替え")
+    (mkEntry "メディア・音量" [] "XF86AudioMicMute" (execCmd "${osd}/bin/hypr-osd mic mute") "マイクミュート切り替え")
     (mkEntry "メディア・音量" [] "XF86AudioPlay" (execCmd "playerctl play-pause") "再生・一時停止")
     (mkEntry "メディア・音量" [] "XF86AudioPause" (execCmd "playerctl play-pause") "再生・一時停止")
     (mkEntry "メディア・音量" [] "XF86AudioNext" (execCmd "playerctl next") "次の曲")
@@ -189,13 +194,14 @@
   ];
 
   # 音量・輝度 (押しっぱなしで連続動作、ロック画面でも効く: locked + repeating)
+  # hypr-osd 経由で変更し、進捗バー付きの通知を表示する (HyDE の volumecontrol.sh 相当)
   sliderEntries = [
-    (mkEntry "音量・輝度" [] "F11" (execCmd "wpctl set-volume @DEFAULT_AUDIO_SINK@ 5%-") "音量を下げる")
-    (mkEntry "音量・輝度" [] "F12" (execCmd "wpctl set-volume -l 1.0 @DEFAULT_AUDIO_SINK@ 5%+") "音量を上げる")
-    (mkEntry "音量・輝度" [] "XF86AudioLowerVolume" (execCmd "wpctl set-volume @DEFAULT_AUDIO_SINK@ 5%-") "音量を下げる")
-    (mkEntry "音量・輝度" [] "XF86AudioRaiseVolume" (execCmd "wpctl set-volume -l 1.0 @DEFAULT_AUDIO_SINK@ 5%+") "音量を上げる")
-    (mkEntry "音量・輝度" [] "XF86MonBrightnessUp" (execCmd "brightnessctl set 5%+") "輝度を上げる")
-    (mkEntry "音量・輝度" [] "XF86MonBrightnessDown" (execCmd "brightnessctl set 5%-") "輝度を下げる")
+    (mkEntry "音量・輝度" [] "F11" (execCmd "${osd}/bin/hypr-osd volume down") "音量を下げる")
+    (mkEntry "音量・輝度" [] "F12" (execCmd "${osd}/bin/hypr-osd volume up") "音量を上げる")
+    (mkEntry "音量・輝度" [] "XF86AudioLowerVolume" (execCmd "${osd}/bin/hypr-osd volume down") "音量を下げる")
+    (mkEntry "音量・輝度" [] "XF86AudioRaiseVolume" (execCmd "${osd}/bin/hypr-osd volume up") "音量を上げる")
+    (mkEntry "音量・輝度" [] "XF86MonBrightnessUp" (execCmd "${osd}/bin/hypr-osd brightness up") "輝度を上げる")
+    (mkEntry "音量・輝度" [] "XF86MonBrightnessDown" (execCmd "${osd}/bin/hypr-osd brightness down") "輝度を下げる")
   ];
 
   # ワークスペース 1〜10 の一括バインド (workspaceBinds) はチートシートには要約だけを載せる
@@ -245,13 +251,100 @@
     categoryOrder);
 
   # SUPER+/ で起動する、キーバインド一覧を rofi に表示するスクリプト (HyDE の Keybinds Hint 相当)
+  # 見た目は desktop/rofi.nix の hyde-keybinds テーマ (HyDE clipboard スタイルの横長版)
   keybindsHint = pkgs.writeShellApplication {
     name = "hypr-keybinds-hint";
     runtimeInputs = [pkgs.rofi];
     text = ''
-      rofi -dmenu -i -p "󰌌 Keybinds" -theme-str 'window {width: 45%; height: 65%;} listview {lines: 20;}' <<'EOF'
+      rofi -dmenu -i -p "󰌌" -theme hyde-keybinds \
+        -theme-str 'entry { placeholder: "󰌌  キーバインドを検索..."; }' <<'EOF'
       ${cheatSheetText}
       EOF
+    '';
+  };
+
+  # スクリーンショット (HyDE の screenshot.sh 相当)
+  # s/sf/m は撮影後に satty が開き、注釈を付けてから保存・クリップボードへコピーできる
+  screenshot = pkgs.writeShellApplication {
+    name = "hypr-screenshot";
+    runtimeInputs = with pkgs; [coreutils hyprshot satty wl-clipboard];
+    text = ''
+      mode="''${1:-s}"
+      save_dir="''${XDG_PICTURES_DIR:-$HOME/Pictures}/Screenshots"
+      save_file="$(date +'%y%m%d_%Hh%Mm%Ss_screenshot.png')"
+      mkdir -p "$save_dir"
+
+      # 撮影結果を satty で開き、注釈後に保存とクリップボードコピーを行う
+      annotate() {
+        satty --filename - --output-filename "$save_dir/$save_file" \
+          --early-exit --copy-command wl-copy
+      }
+
+      case "$mode" in
+      s) hyprshot -m region --raw | annotate ;; # 範囲を選択して撮影
+      sf) hyprshot -m region -z --raw | annotate ;; # 画面を停止して範囲を撮影
+      m) hyprshot -m output -m active --raw | annotate ;; # アクティブモニタを撮影
+      p) hyprshot -m output -o "$save_dir" -f "$save_file" ;; # 全モニタを撮影して保存のみ
+      *)
+        echo "usage: hypr-screenshot [s|sf|m|p]" >&2
+        exit 1
+        ;;
+      esac
+    '';
+  };
+
+  # 音量・マイク・輝度の変更と通知表示 (HyDE の volumecontrol.sh / brightnesscontrol.sh 相当)
+  # mako が -h int:value を進捗バーとして描画する
+  osd = pkgs.writeShellApplication {
+    name = "hypr-osd";
+    runtimeInputs = with pkgs; [brightnessctl coreutils gawk libnotify wireplumber];
+    text = ''
+      target="''${1:?usage: hypr-osd volume|mic|brightness up|down|mute}"
+      action="''${2:?usage: hypr-osd volume|mic|brightness up|down|mute}"
+
+      # 同じ ID で通知を置き換えることで、連打してもバーが1つだけ更新される
+      notify() { # 引数: 通知ID アイコン名 本文 進捗値(0-100)
+        notify-send -a "hypr-osd" -r "$1" -t 1500 -i "$2" -h "int:value:$4" "$3"
+      }
+
+      case "$target" in
+      volume)
+        case "$action" in
+        up) wpctl set-volume -l 1.0 @DEFAULT_AUDIO_SINK@ 5%+ ;;
+        down) wpctl set-volume @DEFAULT_AUDIO_SINK@ 5%- ;;
+        mute) wpctl set-mute @DEFAULT_AUDIO_SINK@ toggle ;;
+        esac
+        status="$(wpctl get-volume @DEFAULT_AUDIO_SINK@)" # 例: "Volume: 0.45 [MUTED]"
+        vol="$(awk '{print int($2 * 100)}' <<<"$status")"
+        if [[ "$status" == *MUTED* ]]; then
+          notify 91190 audio-volume-muted "󰝟 ミュート" 0
+        elif ((vol < 34)); then
+          notify 91190 audio-volume-low "󰕿 音量 $vol%" "$vol"
+        elif ((vol < 67)); then
+          notify 91190 audio-volume-medium "󰖀 音量 $vol%" "$vol"
+        else
+          notify 91190 audio-volume-high "󰕾 音量 $vol%" "$vol"
+        fi
+        ;;
+      mic)
+        wpctl set-mute @DEFAULT_AUDIO_SOURCE@ toggle
+        status="$(wpctl get-volume @DEFAULT_AUDIO_SOURCE@)"
+        vol="$(awk '{print int($2 * 100)}' <<<"$status")"
+        if [[ "$status" == *MUTED* ]]; then
+          notify 91191 microphone-sensitivity-muted "󰍭 マイク: ミュート" 0
+        else
+          notify 91191 microphone-sensitivity-high "󰍬 マイク: オン" "$vol"
+        fi
+        ;;
+      brightness)
+        case "$action" in
+        up) brightnessctl set 5%+ ;;
+        down) brightnessctl set 5%- ;;
+        esac
+        pct="$(brightnessctl -m | awk -F, '{print $4}' | tr -d '%')"
+        notify 91192 display-brightness "󰃟 輝度 $pct%" "$pct"
+        ;;
+      esac
     '';
   };
 in {
@@ -468,38 +561,78 @@ in {
         }
       ];
 
-      # ウィンドウルール: 設定系のダイアログはフローティングにする
+      # ウィンドウルール (HyDE の windowrules.conf 相当)
+      # 設定系のダイアログはフローティング + 半透明にする
+      # (opacity は "アクティブ 非アクティブ フルスクリーン" の順、override は乗算でなく絶対値指定)
       window_rule = [
         {
           match.class = "^(org.pulseaudio.pavucontrol|pavucontrol)$";
           float = true;
+          opacity = "0.80 override 0.70 override 1 override";
         }
         {
           match.class = "^(\\.?blueman-manager(-wrapped)?)$";
           float = true;
+          opacity = "0.80 override 0.70 override 1 override";
         }
         {
           match.class = "^(nm-connection-editor)$";
           float = true;
+          opacity = "0.80 override 0.70 override 1 override";
         }
         {
           match.class = "^(fcitx5-config-qt)$";
           float = true;
         }
-        # ブラウザのピクチャインピクチャを最前面に固定
+        # ファイルマネージャ・アーカイバは半透明 (背景ぼかしと合わせて HyDE の質感になる)
+        {
+          match.class = "^(org.kde.dolphin)$";
+          opacity = "0.80 override 0.80 override 1 override";
+        }
+        {
+          match.class = "^(org.kde.ark)$";
+          opacity = "0.80 override 0.80 override 1 override";
+        }
+        # 動画・音楽を全画面再生中は自動ロック・画面オフを抑止する
+        {
+          match.class = "^(zen.*|.*firefox.*|mpv|vlc|.*[Ss]potify.*)$";
+          idle_inhibit = "fullscreen";
+        }
+        # ブラウザのピクチャインピクチャを右下に小さく配置して最前面に固定
         {
           match.title = "^(Picture-in-Picture|ピクチャーインピクチャー|ピクチャインピクチャ)$";
           float = true;
           pin = true;
+          keep_aspect_ratio = true;
+          move = "73% 72%";
+          size = "25% 25%";
         }
       ];
 
-      # rofi の背後をぼかす (ignore_alpha = 0 は旧 ignorezero 相当)
-      layer_rule = {
-        match.namespace = "rofi";
-        blur = true;
-        ignore_alpha = 0;
-      };
+      # レイヤールール: rofi / wlogout / 通知の背後をぼかす
+      # (ignore_alpha = 0 は旧 ignorezero 相当)
+      layer_rule = [
+        {
+          match.namespace = "rofi";
+          blur = true;
+          ignore_alpha = 0;
+        }
+        {
+          match.namespace = "logout_dialog"; # wlogout
+          blur = true;
+          ignore_alpha = 0;
+        }
+        {
+          match.namespace = "notifications"; # mako
+          blur = true;
+          ignore_alpha = 0;
+        }
+        {
+          match.namespace = "waybar";
+          blur = true;
+          ignore_alpha = 0;
+        }
+      ];
 
       # ---- キーバインド ----
       # mainEntries などのデータから生成 (詳細は上の let ブロックを参照)
@@ -520,5 +653,5 @@ in {
     };
   };
 
-  home.packages = [keybindsHint];
+  home.packages = [keybindsHint osd screenshot];
 }

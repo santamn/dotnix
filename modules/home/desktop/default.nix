@@ -8,5 +8,6 @@
     ./rofi.nix
     ./services.nix
     ./waybar.nix
+    ./wlogout.nix
   ];
 }

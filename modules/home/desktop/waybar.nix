@@ -135,7 +135,7 @@ in {
       "custom/power" = {
         format = "⏻";
         tooltip = false;
-        on-click = "wlogout";
+        on-click = "pkill -x wlogout || wlogout -b 6 -p layer-shell";
       };
     };
 

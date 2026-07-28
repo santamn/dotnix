@@ -7,6 +7,9 @@
     hyprland.enable = false; # ボーダー色はスキーム色のグラデーションを自前設定
     hyprlock.enable = false; # ロック画面レイアウトは desktop/hyprlock.nix で定義
     waybar.enable = false; # スタイルは desktop/waybar.nix の CSS で定義
+    # stylix の rofi テーマは配色のみでレイアウトが rofi 既定のままになり表示が崩れるため、
+    # HyDE 風の完全な rasi テーマを desktop/rofi.nix で自前定義している
+    rofi.enable = false;
 
     # Neovim は AstroNvim 側のカラースキームを使う
     neovim.enable = false;

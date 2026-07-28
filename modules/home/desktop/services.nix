@@ -19,13 +19,8 @@
   services.network-manager-applet.enable = true;
   services.blueman-applet.enable = true;
 
-  # ログアウト・電源メニュー (Ctrl+Alt+Delete)
-  programs.wlogout.enable = true;
-
   home.packages = with pkgs; [
-    hyprshot # スクリーンショット (Super+P)
     hyprpicker # カラーピッカー (Super+Shift+P)
-    satty # スクリーンショットの注釈付け
     rofimoji # 絵文字ピッカー (Super+,)
     wtype # rofimoji が絵文字を入力するのに使用
     wl-clip-persist # コピー元アプリ終了後もクリップボードを保持

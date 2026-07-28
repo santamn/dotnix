@@ -27,13 +27,16 @@ flake.nix
 | Hyprland 設定一式 | `wayland.windowManager.hyprland` ([modules/home/desktop/hyprland.nix](../modules/home/desktop/hyprland.nix)) |
 | テーマシステム (wallbash) | stylix ([modules/nixos/theme.nix](../modules/nixos/theme.nix)、壁紙から配色を自動生成) |
 | waybar 設定 | `programs.waybar` ([modules/home/desktop/waybar.nix](../modules/home/desktop/waybar.nix)) |
-| rofi ランチャー | `programs.rofi` (テーマは stylix が生成) |
+| rofi ランチャー (style_1 / clipboard) | HyDE のテーマを移植した自前 rasi。配色は stylix のスキーム ([modules/home/desktop/rofi.nix](../modules/home/desktop/rofi.nix)) |
+| Keybinds Hint (Super+/) | 同上の hyde-keybinds テーマ + 自前チートシート生成 ([modules/home/desktop/hyprland.nix](../modules/home/desktop/hyprland.nix)) |
+| wlogout (style_1) | HyDE のスタイルを移植した自前 CSS ([modules/home/desktop/wlogout.nix](../modules/home/desktop/wlogout.nix)) |
 | hyprlock レイアウト (SF Pro) | `programs.hyprlock` の自前レイアウト ([modules/home/desktop/hyprlock.nix](../modules/home/desktop/hyprlock.nix)) |
 | hypridle | `services.hypridle` |
 | mako (通知) | `services.mako` (配色は stylix) |
 | SDDM + astronaut テーマ | 同じものを直接定義 ([modules/nixos/desktop.nix](../modules/nixos/desktop.nix)) |
-| スクリーンショットスクリプト | hyprshot + satty + hyprpicker |
-| クリップボード履歴 | `services.cliphist` + rofi (Super+V) |
+| スクリーンショットスクリプト | hypr-screenshot (hyprshot で撮影 → satty で注釈) |
+| 音量・輝度の通知 (volumecontrol.sh) | hypr-osd (wpctl / brightnessctl + mako の進捗バー通知) |
+| クリップボード履歴 | `services.cliphist` + rofi (Super+V、Shift 併用で削除) |
 | Bibata カーソル / Tela アイコン | stylix の cursor / iconTheme 設定 |
 | kitty | Ghostty (以前から独自設定) |
 
@@ -65,15 +68,16 @@ waybar / hyprland / hyprlock は `config.lib.stylix.colors` 経由で同じス�
 | Super+T / Super+B / Super+E / Super+C | ターミナル / ブラウザ / ファイラ / エディタ |
 | Super+A | アプリランチャー (rofi) |
 | Super+Tab | ウィンドウ切り替え (rofi) |
-| Super+V | クリップボード履歴 |
+| Super+V | クリップボード履歴 (Shift 併用で履歴から削除) |
 | Super+, | 絵文字ピッカー |
+| Super+/ | キーバインド一覧 (Keybinds Hint) |
 | Super+Q / Alt+F4 | ウィンドウを閉じる |
 | Super+W | フローティング切り替え |
 | Super+F / Shift+F11 | フルスクリーン |
 | Super+L | 画面ロック |
 | Ctrl+Alt+Delete | ログアウトメニュー (wlogout) |
 | Super+1〜0 | ワークスペース移動 (Shift 併用でウィンドウごと移動) |
-| Super+P | 範囲スクリーンショット (Ctrl 併用で画面停止、Alt 併用でモニタ全体) |
+| Super+P | 範囲スクリーンショット → satty で注釈 (Ctrl 併用で画面停止、Alt 併用でモニタ全体) |
 | Super+Shift+P | カラーピッカー |
 | Super+Z (ドラッグ) / Super+X (ドラッグ) | ウィンドウ移動 / リサイズ |
 | 右Alt / 左Alt | 日本語入力オン / オフ (fcitx5 + Mozc) |
