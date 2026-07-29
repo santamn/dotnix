@@ -1,4 +1,7 @@
 # フォント
+#
+# hydenix (pkgs.hyde) が同梱するのは HyDE 自身のアイコン用フォントのみで、
+# 日本語 CJK や絵文字などシステム全体のフォントはここで別途用意する必要がある
 {pkgs, ...}: {
   fonts = {
     packages = with pkgs; [
@@ -8,7 +11,7 @@
       noto-fonts-cjk-sans
       noto-fonts-cjk-serif
       noto-fonts-color-emoji
-      inter # ロック画面などで使う UI フォント (SF Pro 風)
+      inter # 汎用 UI フォント
       terminus_font
       cantarell-fonts
     ];

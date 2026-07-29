@@ -1,53 +1,119 @@
 # 構成の全体像
 
-## 設計方針
+## 歴史
 
-- **hydenix / HyDE への依存を持たない**: すべて nixpkgs・Home Manager 公式モジュール・stylix など活発にメンテナンスされている汎用ツールだけで構成する
-- **マシン固有の情報は `hosts/` に隔離**: それ以外 (modules/, home/) はどのマシンでも同じものを使い、新しいマシンの追加を数ファイルで済ませる
-- **見た目は stylix に一元化**: 配色・フォント・カーソル・壁紙を1箇所で定義し、アプリごとの色設定を書かない
+このリポジトリはもともと [richen604/hydenix](https://github.com/richen604/hydenix) のテンプレートから作られており、
+個人設定 (`modules/hm/default.nix` 相当) だけで HyDE デスクトップ (Hyprland + waybar + rofi + wlogout + hyprlock ...) が成立していた。
+
+2026-07-22、本家 hydenix がメンテナンスモードに入ったのを機に hydenix 依存を切り離し、
+素の NixOS + Home Manager + stylix で HyDE の見た目を手作業で再現する構成に移行した。
+しかしこの構成は stylix では代替できない部分 (waybar のモジュール群、rofi のレイアウト、wlogout、
+Keybinds Hint 等のスクリプト、wallbash) をすべて手書きする必要があり、HyDE を独力で再実装し続ける
+トレッドミルに陥った。
+
+2026-07-29、hydenix の実質後継である [florianvazelle/hydenix](https://github.com/florianvazelle/hydenix) を
+フォークした **[santamn/hydenix](https://github.com/santamn/hydenix)** に依存する形へ戻した。
+ただし多ホスト構成 (`hosts/` / `mkHost`) やこの間に追加した資産 (nh, 指紋認証, Neovim, Ghostty 等) は
+hydenix と両立するため維持している。**変わったのは「デスクトップ UI 層」だけ**で、
+hydenix 以前からのテンプレート形式のファイル配置 (`configuration.nix` 直下など) には戻していない。
+
+## リポジトリの関係
+
+```
+richen604/hydenix          本家。メンテナンスモード
+        ↓ fork
+florianvazelle/hydenix     実質的な後継
+        ↓ fork
+santamn/hydenix            ← dotnix が依存しているのはこれ (自分のフォーク)
+        ↑ inputs.hydenix.url
+dotnix                     ← このリポジトリ
+```
+
+自分のフォークを挟んでいるのは、上流が止まった場合に自分で前へ進められるようにするため。
+普段は `git merge upstream/main` するだけで追加コストはほぼない。運用の詳細は
+`~/Documents/hydenix` (santamn/hydenix のクローン) の `docs-ja/09-fork-workflow.md` を参照。
+
+## hydenix が提供するもの・dotnix が持つもの
+
+hydenix が公開する契約は flake の出力 3 つだけで、ファイル配置には関与しない。
+
+```nix
+inputs.hydenix.nixosModules.default   # システム側モジュール一式 (Hyprland, SDDM, audio, network ...)
+inputs.hydenix.homeModules.default    # ユーザー側モジュール一式 (waybar, rofi, wlogout, hyprlock, テーマ ...)
+inputs.hydenix.overlays.default       # pkgs.hyde などを追加
+```
+
+`nixosModules.default` は home-manager 本体の読み込みと `homeModules.default` の配線
+(`home-manager.sharedModules`) まで面倒を見てくれるため、dotnix 側で
+`inputs.home-manager.nixosModules.home-manager` を明示的に import する必要はない。
+
+| 役割 | 担当 |
+|---|---|
+| Hyprland / waybar / rofi / wlogout / hyprlock / hypridle / テーマ (wallbash) | hydenix (`hydenix.hm.*`) |
+| SDDM (astronaut テーマ) / Hyprland 本体の有効化 / XDG ポータル 等 | hydenix (`modules/system/{sddm,system,nix}.nix`。`hydenix.enable` に関わらず常時有効) |
+| 多ホスト構成 (`hosts/` / `mkHost`) | dotnix |
+| 指紋認証 (fprintd + PAM のパスワードフォールバック設計) | dotnix ([modules/nixos/fingerprint.nix](../modules/nixos/fingerprint.nix)) |
+| nh (rebuild / GC ラッパー) | dotnix ([modules/nixos/nix.nix](../modules/nixos/nix.nix)) |
+| audio / boot / network / bluetooth / users | dotnix (hydenix 側の同等モジュールは `hydenix.enable` 未設定=false のため無効のまま) |
+| nushell (対話シェル) / starship / zsh (ログインシェル) / git / delta | dotnix ([modules/home/programs/](../modules/home/programs/)) |
+| Neovim (AstroNvim, Mason 不使用) | dotnix ([nvim/](../nvim/)、[neovim.md](neovim.md) 参照) |
+| Ghostty / zen-browser / fcitx5 / kdeconnect / herdr | dotnix ([modules/home/programs/](../modules/home/programs/)) |
+
+### `hydenix.enable` をあえて有効化していない理由
+
+hydenix システム側の `nix.nix` / `sddm.nix` / `system.nix` は `hydenix.enable` に関わらず常時有効
+(Hyprland 本体・SDDM astronaut テーマ・XDG ポータル等、HyDE の見た目に必須な部分はここに含まれる)。
+一方 `audio.nix` / `network.nix` / `hardware.nix` / `boot.nix` / `gaming.nix` は
+`hydenix.enable = true` にしないと有効化されない設計になっている。
+
+dotnix は audio / boot / network を移行前から独自モジュールとして持っており (`modules/nixos/`)、
+`hydenix.gaming` (Steam / Lutris 等) は元々使っていない。そのため `hydenix.enable` は
+既定値の `false` のままにし、hydenix 側の audio/network/hardware/gaming モジュールは有効化していない。
+必要になれば `hydenix.enable = true;` として `hydenix.gaming.enable = false;` のように
+個別に絞り込むこともできる。
 
 ## 評価の流れ
 
 ```
 flake.nix
  └─ mkHost "thinkpad-x13-gen6"
-     ├─ hosts/thinkpad-x13-gen6/     ← ハードウェア構成・stateVersion (マシン固有)
-     ├─ modules/nixos/               ← システム設定 (全マシン共通)
-     │   ├─ theme.nix                ← stylix の基本設定 (スキーム・フォント・壁紙)
-     │   └─ home-manager.nix         ← Home Manager を NixOS モジュールとして組み込み
-     │       └─ home/santamn.nix    ← ユーザ設定のエントリポイント
-     │           └─ modules/home/   ← デスクトップ・各アプリの設定
-     └─ stylix (NixOS モジュール)    ← Home Manager 側にも自動で適用される
+     ├─ hosts/thinkpad-x13-gen6/          ← ハードウェア構成・stateVersion (マシン固有)
+     ├─ modules/nixos/                    ← dotnix 独自のシステム設定 (audio, network, 指紋認証, nh ...)
+     └─ inputs.hydenix.nixosModules.default
+         ├─ home-manager (NixOS モジュール)
+         │   └─ home/santamn.nix          ← ユーザ設定のエントリポイント + hydenix.hm オプション
+         │       └─ modules/home/         ← dotnix 独自のユーザ設定 (nushell, ghostty, neovim ...)
+         └─ hydenix の system/*, hm/* モジュール群 (Hyprland, SDDM, waybar, rofi, wlogout ...)
 ```
 
-## hydenix からの置き換え対応表
+## hydenix.hm の設定 ([home/santamn.nix](../home/santamn.nix))
 
-| hydenix / HyDE の機能 | 置き換え先 |
-|---|---|
-| Hyprland 設定一式 | `wayland.windowManager.hyprland` ([modules/home/desktop/hyprland.nix](../modules/home/desktop/hyprland.nix)) |
-| テーマシステム (wallbash) | stylix ([modules/nixos/theme.nix](../modules/nixos/theme.nix)、壁紙から配色を自動生成) |
-| waybar 設定 | `programs.waybar` ([modules/home/desktop/waybar.nix](../modules/home/desktop/waybar.nix)) |
-| rofi ランチャー (style_1 / clipboard) | HyDE のテーマを移植した自前 rasi。配色は stylix のスキーム ([modules/home/desktop/rofi.nix](../modules/home/desktop/rofi.nix)) |
-| Keybinds Hint (Super+/) | 同上の hyde-keybinds テーマ + 自前チートシート生成 ([modules/home/desktop/hyprland.nix](../modules/home/desktop/hyprland.nix)) |
-| wlogout (style_1) | HyDE のスタイルを移植した自前 CSS ([modules/home/desktop/wlogout.nix](../modules/home/desktop/wlogout.nix)) |
-| hyprlock レイアウト (SF Pro) | `programs.hyprlock` の自前レイアウト ([modules/home/desktop/hyprlock.nix](../modules/home/desktop/hyprlock.nix)) |
-| hypridle | `services.hypridle` |
-| mako (通知) | `services.mako` (配色は stylix) |
-| SDDM + astronaut テーマ | 同じものを直接定義 ([modules/nixos/desktop.nix](../modules/nixos/desktop.nix)) |
-| スクリーンショットスクリプト | hypr-screenshot (hyprshot で撮影 → satty で注釈) |
-| 音量・輝度の通知 (volumecontrol.sh) | hypr-osd (wpctl / brightnessctl + mako の進捗バー通知) |
-| クリップボード履歴 | `services.cliphist` + rofi (Super+V、Shift 併用で削除) |
-| Bibata カーソル / Tela アイコン | stylix の cursor / iconTheme 設定 |
-| kitty | Ghostty (以前から独自設定) |
+| オプション | 値 | 理由 |
+|---|---|---|
+| `theme.active` | `"Decay Green"` | HyDE 時代からの既定テーマ |
+| `firefox.enable` | `false` | zen-browser を使う |
+| `terminals.kitty.enable` | `false` | Ghostty を使う |
+| `social.discord.enable` | `false` | vesktop (Wayland 画面共有対応) を使う |
+| `editors.default` | `"nvim"` | 既定エディタ、mimeApps もこれに追従 |
+| `shell.enable` | `false` | zsh/nushell/starship は `modules/home/programs/` 側で管理しており衝突するため丸ごと無効化 |
 
-## テーマの変え方
+`hydenix.hm.git` (本家 issue #169 のバグにより削除されたオプション) は
+`modules/home/programs/git.nix` の素の `programs.git.settings.user` に統合済み。
+`hydenix.hm.hyprland.pyprland` はフォーク側で削除されている (scratchpad 等が使えない、既知の制約)。
 
-配色は `image` に指定した壁紙から stylix が自動生成する (これが stylix の本来のモード)。変更する場合は [modules/nixos/theme.nix](../modules/nixos/theme.nix) で:
+## mutable ファイルの上書き (waybar clock / hyprlock フォント)
 
-- **壁紙を変える**: `image` を手元の画像パスに差し替える (配色も壁紙に合わせて変わる)
-- **固定スキームにする**: `base16Scheme` に [themes/decay-green.yaml](../themes/decay-green.yaml) (HyDE の Decay Green の移植) や [tinted-theming/schemes](https://github.com/tinted-theming/schemes) 収録の yaml を指定すると、壁紙によらずそのスキームが使われる
+HyDE はテーマ切り替え時にスクリプトが設定ファイルを書き換える前提のため、`mutable = true` を付けた
+`home.file` は symlink ではなくコピーとして配置される (詳細は hydenix リポジトリの
+`docs-ja/04-mutable-files.md`)。**この仕組みの上で個人カスタマイズを行う場合、hydenix 側が
+同じパスに `mutable = true` を設定していると、上書きする側にも `mutable = true` を付けないと
+activation の `cp` で結果が戻されてしまう。**
 
-waybar / hyprland / hyprlock は `config.lib.stylix.colors` 経由で同じスキームを参照しているので、壁紙 (やスキーム) を替えるだけで全体の配色が追従する。
+[home/santamn.nix](../home/santamn.nix) では waybar の時計フォーマットと hyprlock のフォントを
+この方法で上書きしている。ただし waybar 側は `.config/waybar/modules` ディレクトリ全体が
+`recursive` コピーで配置されるため、個別ファイルの上書きが確実に効く保証はない
+(hydenix 本体の `modules/hm/waybar.nix` コメント参照)。**実機の rebuild で反映されない場合は、
+`includes.json` の参照先を差し替える方法に切り替えること。**
 
 ## 指紋認証の設計 ([modules/nixos/fingerprint.nix](../modules/nixos/fingerprint.nix))
 
@@ -56,30 +122,23 @@ waybar / hyprland / hyprlock は `config.lib.stylix.colors` 経由で同じス�
 | 場面 | 挙動 |
 |---|---|
 | ログイン画面 (SDDM) | パスワードのみ。初回ログインをパスワードで行わないと gnome-keyring が解錠されないため意図的にこうしている |
-| ロック画面 (hyprlock) | **指紋とパスワードを同時に受け付ける** (hyprlock 内蔵の指紋対応を使用) |
+| ロック画面 (hyprlock) | **指紋とパスワードを同時に受け付ける** (hyprlock 内蔵の指紋対応を使用。PAM 側では `fprintAuth` を設定しない) |
 | sudo / polkit ダイアログ | まず指紋を試行し、読み取りに規定回数失敗するかタイムアウトすると自動でパスワード入力に切り替わる |
 
 指紋の登録は `fprintd-enroll`、確認は `fprintd-verify`。
 
-## 主要キーバインド (HyDE の既定配置をほぼ踏襲)
+## 既知の制約・落とし穴
 
-| キー | 動作 |
-|---|---|
-| Super+T / Super+B / Super+E / Super+C | ターミナル / ブラウザ / ファイラ / エディタ |
-| Super+A | アプリランチャー (rofi) |
-| Super+Tab | ウィンドウ切り替え (rofi) |
-| Super+V | クリップボード履歴 (Shift 併用で履歴から削除) |
-| Super+, | 絵文字ピッカー |
-| Super+/ | キーバインド一覧 (Keybinds Hint) |
-| Super+Q / Alt+F4 | ウィンドウを閉じる |
-| Super+W | フローティング切り替え |
-| Super+F / Shift+F11 | フルスクリーン |
-| Super+L | 画面ロック |
-| Ctrl+Alt+Delete | ログアウトメニュー (wlogout) |
-| Super+1〜0 | ワークスペース移動 (Shift 併用でウィンドウごと移動) |
-| Super+P | 範囲スクリーンショット → satty で注釈 (Ctrl 併用で画面停止、Alt 併用でモニタ全体) |
-| Super+Shift+P | カラーピッカー |
-| Super+Z (ドラッグ) / Super+X (ドラッグ) | ウィンドウ移動 / リサイズ |
-| 右Alt / 左Alt | 日本語入力オン / オフ (fcitx5 + Mozc) |
-
-全キーバインドは [modules/home/desktop/hyprland.nix](../modules/home/desktop/hyprland.nix) を参照。
+- **HyDE のバージョン差**: フォークの HyDE は本家より新しい (2026-03 時点)。記憶にある見た目と
+  完全一致しない場合は「フォークが壊れている」より先に「HyDE 側の変更」を疑うこと
+- **`mutable` ファイルは設定から消しても残る**: `home.file` から削除しても実体はホームに残り続ける。
+  テーマ関連がおかしくなったら `rm -rf ~/.config/hyde ~/.local/share/hyde ~/.cache/hyde` の後に
+  再度 `nixos-rebuild switch` でリセットできる
+- **`stateVersion` の二重定義**: hydenix が `system.stateVersion` / `home.stateVersion` を
+  `mkDefault` なしで `"25.05"` に設定しており、dotnix 側 (`hosts/*/default.nix`, `home/santamn.nix`)
+  も同じ値を設定している。型が `mergeEqualOption` のため両方が `"25.05"` である限りエラーにならないが、
+  **片方だけ値を変えると定義衝突でビルドが落ちる**。変更する場合は両方揃えること
+- **`mutableGeneration` 依存名の不一致**: hydenix 本体の `theme.nix` / `hyde.nix` /
+  `hyprland/default.nix` が存在しない activation エントリ名 `mutableGeneration` を参照しており
+  (正しくは `mutableFileGeneration`)、順序制約が効いていない。上流 (santamn/hydenix) 側の
+  修正候補として認識している既知の問題で、dotnix 側では対処不要

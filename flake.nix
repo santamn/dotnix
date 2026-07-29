@@ -1,27 +1,19 @@
 {
-  description = "NixOS configuration";
+  description = "NixOS configuration powered by hydenix";
+
+  # hydenix (Hyprland を自前ビルドすると重い) 向けのバイナリキャッシュ
+  nixConfig = {
+    extra-substituters = ["https://hyprland.cachix.org"];
+    extra-trusted-substituters = ["https://hyprland.cachix.org"];
+    extra-trusted-public-keys = ["hyprland.cachix.org-1:a7pgxzMz7+chwVL3/pzj6jIBMioiJM7ypFP8PwtkuGc="];
+  };
 
   inputs = {
-    nixpkgs.url = "github:nixos/nixpkgs/nixos-unstable";
-
-    home-manager = {
-      url = "github:nix-community/home-manager";
-      inputs.nixpkgs.follows = "nixpkgs";
-    };
-
-    # 壁紙・カラースキームから全アプリのテーマを統一生成する
-    stylix = {
-      url = "github:nix-community/stylix";
-      inputs.nixpkgs.follows = "nixpkgs";
-    };
-
-    nixos-hardware.url = "github:nixos/nixos-hardware/master";
-
-    # command-not-found の代替 (nix-index) と comma のデータベース
-    nix-index-database = {
-      url = "github:nix-community/nix-index-database";
-      inputs.nixpkgs.follows = "nixpkgs";
-    };
+    # hydenix が固定している nixpkgs に揃える。
+    # 独自の nixpkgs を使うと hydenix 側とパッケージが二重になり不具合が出る
+    nixpkgs.follows = "hydenix/nixpkgs";
+    hydenix.url = "github:santamn/hydenix";
+    nixos-hardware.follows = "hydenix/nixos-hardware";
 
     zen-browser = {
       url = "github:0xc000022070/zen-browser-flake";
@@ -44,8 +36,8 @@
         modules = [
           ./hosts/${hostName} # ホスト固有 (ハードウェア構成・stateVersion など)
           ./modules/nixos # 全ホスト共通のシステム設定
-          inputs.home-manager.nixosModules.home-manager
-          inputs.stylix.nixosModules.stylix
+          # home-manager 本体の読み込みと homeModules.default の配線 (sharedModules) まで面倒を見てくれる
+          inputs.hydenix.nixosModules.default
           {networking.hostName = hostName;}
         ];
       };

@@ -13,6 +13,7 @@
     fcitx5 = {
       addons = with pkgs; [
         fcitx5-mozc
+        fcitx5-fluent
         qt6Packages.fcitx5-configtool
       ];
       waylandFrontend = true;
@@ -55,8 +56,6 @@
         };
 
         # アドオンの設定 (~/.config/fcitx5/conf/classicui.conf)
-        # フォントとテーマは stylix の fcitx5 ターゲットが base16 スキームから自動生成する
-        # (フォントサイズは modules/nixos/theme.nix の stylix.fonts.sizes.popups で調整)
         addons = {
           classicui = {
             globalSection = {
@@ -64,6 +63,10 @@
               "Vertical Candidate List" = true;
               # システムのスケールに追従
               PerScreenDPI = true;
+              # フォント設定 (お好みに合わせて変更してください)
+              Font = "Noto Sans CJK JP 11";
+              # テーマ (FluentDark / FluentDark-solid / FluentLight / FluentLight-solid)
+              Theme = "FluentDark";
             };
           };
         };

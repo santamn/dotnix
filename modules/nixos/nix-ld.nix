@@ -1,5 +1,5 @@
-# nix-ld: FHS 前提でビルドされた既成バイナリ (プロジェクトのツールチェーンが
-# ダウンロードしてくるものなど) を NixOS 上でも動かすための互換レイヤー
+# nix-ld: FHS 前提でビルドされた既成バイナリ(プロジェクトのツールチェーンがダウンロードしてくるものなど)を
+# NixOS 上でも動かすための互換レイヤー
 {pkgs, ...}: {
   programs.nix-ld.enable = true;
   programs.nix-ld.libraries = with pkgs; [

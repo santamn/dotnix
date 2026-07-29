@@ -1,11 +1,8 @@
 # ユーザ環境 (Home Manager) 設定のエントリポイント
 {...}: {
   imports = [
-    ./desktop
     ./dotfiles.nix
     ./packages.nix
-    ./theme.nix
-    ./xdg.nix
 
     ./programs/direnv.nix
     ./programs/fcitx5.nix

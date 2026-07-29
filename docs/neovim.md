@@ -3,8 +3,7 @@
 ## 基本方針: Lua で設定してバイナリを Nix で管理
 
 - 設定本体は [nvim/](../nvim/) にある普通の Lua (AstroNvim v5 + lazy.nvim)
-  - `~/.config/nvim` はこのディレクトリへのシンボリックリンクなので、
-  Lua の編集は nixos-rebuild なしで即座に反映される
+  - `~/.config/nvim` はこのディレクトリへのシンボリックリンクなので Lua の編集は nixos-rebuild なしで即座に反映される
 - Nix が担当するもの ([modules/home/programs/neovim.nix](../modules/home/programs/neovim.nix)):
   - Neovim 本体
   - LSP サーバー・フォーマッタなどの外部バイナリ

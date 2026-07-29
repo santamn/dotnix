@@ -7,7 +7,7 @@
 #     初回ログインはパスワードで行わないと gnome-keyring が解錠されないため、
 #     あえて指紋を使わない
 # - ロック画面 (hyprlock): 指紋とパスワードを「同時に」受け付ける
-#     PAM 経由ではなく hyprlock 内蔵の指紋対応を使う (modules/home/desktop/hyprlock.nix)。
+#     PAM 経由ではなく hyprlock 内蔵の指紋対応を使う (hydenix.hm.lockscreen が配置)。
 #     そのためここでは hyprlock の PAM に fprintAuth を設定しない
 # - sudo / polkit: まず指紋を試行し、失敗 (規定回数ミス or タイムアウト) すると
 #     自動的にパスワード入力へ切り替わる
