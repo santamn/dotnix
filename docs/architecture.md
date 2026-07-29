@@ -2,20 +2,11 @@
 
 ## 歴史
 
-このリポジトリはもともと [richen604/hydenix](https://github.com/richen604/hydenix) のテンプレートから作られており、
-個人設定 (`modules/hm/default.nix` 相当) だけで HyDE デスクトップ (Hyprland + waybar + rofi + wlogout + hyprlock ...) が成立していた。
+このリポジトリはもともと [richen604/hydenix](https://github.com/richen604/hydenix) のテンプレートに自分用のカスタマイズ (`modules/hm/default.nix` 相当) を加えた形で HyDE デスクトップ (Hyprland + waybar + rofi + wlogout + hyprlock ...) を運用していた。
 
-2026-07-22、本家 hydenix がメンテナンスモードに入ったのを機に hydenix 依存を切り離し、
-素の NixOS + Home Manager + stylix で HyDE の見た目を手作業で再現する構成に移行した。
-しかしこの構成は stylix では代替できない部分 (waybar のモジュール群、rofi のレイアウト、wlogout、
-Keybinds Hint 等のスクリプト、wallbash) をすべて手書きする必要があり、HyDE を独力で再実装し続ける
-トレッドミルに陥った。
+本家 hydenix がメンテナンスモードに入ったのを機に hydenix 依存を切り離し、素の NixOS + Home Manager + stylix で HyDE の見た目を手作業で再現する構成を試みたが、この構成は stylix では代替できない部分 (waybar のモジュール群、rofi のレイアウト、wlogout、Keybinds Hint 等のスクリプト、wallbash) をすべて手書きする必要があり、多数のエラーが発生する上に、HyDE のアップデートに追従するのが困難であった。
 
-2026-07-29、hydenix の実質後継である [florianvazelle/hydenix](https://github.com/florianvazelle/hydenix) を
-フォークした **[santamn/hydenix](https://github.com/santamn/hydenix)** に依存する形へ戻した。
-ただし多ホスト構成 (`hosts/` / `mkHost`) やこの間に追加した資産 (nh, 指紋認証, Neovim, Ghostty 等) は
-hydenix と両立するため維持している。**変わったのは「デスクトップ UI 層」だけ**で、
-hydenix 以前からのテンプレート形式のファイル配置 (`configuration.nix` 直下など) には戻していない。
+そこで、hydenix の実質後継である [florianvazelle/hydenix](https://github.com/florianvazelle/hydenix) をフォークした [santamn/hydenix](https://github.com/santamn/hydenix) に依存する形へ戻した。ただし多ホスト構成 (`hosts/` / `mkHost`) やこの間に追加した資産 (nh, 指紋認証, Neovim, Ghostty 等) は hydenix と両立するため維持している。
 
 ## リポジトリの関係
 
@@ -29,9 +20,7 @@ santamn/hydenix            ← dotnix が依存しているのはこれ (自分�
 dotnix                     ← このリポジトリ
 ```
 
-自分のフォークを挟んでいるのは、上流が止まった場合に自分で前へ進められるようにするため。
-普段は `git merge upstream/main` するだけで追加コストはほぼない。運用の詳細は
-`~/Documents/hydenix` (santamn/hydenix のクローン) の `docs-ja/09-fork-workflow.md` を参照。
+自分のフォークを挟んでいるのは、上流が止まった場合に自分で前へ進められるようにするためである。普段は `git merge upstream/main` するだけで追加コストはほぼない。運用の詳細は `~/Documents/hydenix` (santamn/hydenix のクローン) の `docs-ja/09-fork-workflow.md` を参照。
 
 ## hydenix が提供するもの・dotnix が持つもの
 
@@ -43,9 +32,7 @@ inputs.hydenix.homeModules.default    # ユーザー側モジュール一式 (wa
 inputs.hydenix.overlays.default       # pkgs.hyde などを追加
 ```
 
-`nixosModules.default` は home-manager 本体の読み込みと `homeModules.default` の配線
-(`home-manager.sharedModules`) まで面倒を見てくれるため、dotnix 側で
-`inputs.home-manager.nixosModules.home-manager` を明示的に import する必要はない。
+`nixosModules.default` は home-manager 本体の読み込みと `homeModules.default` の配線 (`home-manager.sharedModules`) まで面倒を見てくれるため、dotnix 側で `inputs.home-manager.nixosModules.home-manager` を明示的に import する必要はない。
 
 | 役割 | 担当 |
 |---|---|
@@ -61,16 +48,9 @@ inputs.hydenix.overlays.default       # pkgs.hyde などを追加
 
 ### `hydenix.enable` をあえて有効化していない理由
 
-hydenix システム側の `nix.nix` / `sddm.nix` / `system.nix` は `hydenix.enable` に関わらず常時有効
-(Hyprland 本体・SDDM astronaut テーマ・XDG ポータル等、HyDE の見た目に必須な部分はここに含まれる)。
-一方 `audio.nix` / `network.nix` / `hardware.nix` / `boot.nix` / `gaming.nix` は
-`hydenix.enable = true` にしないと有効化されない設計になっている。
+hydenix システム側の `nix.nix` / `sddm.nix` / `system.nix` は `hydenix.enable` に関わらず常時有効になっている。Hyprland 本体・SDDM astronaut テーマ・XDG ポータル等、HyDE の見た目に必須な部分はここに含まれる。一方 `audio.nix` / `network.nix` / `hardware.nix` / `boot.nix` / `gaming.nix` は `hydenix.enable = true` にしないと有効化されない設計になっている。
 
-dotnix は audio / boot / network を移行前から独自モジュールとして持っており (`modules/nixos/`)、
-`hydenix.gaming` (Steam / Lutris 等) は元々使っていない。そのため `hydenix.enable` は
-既定値の `false` のままにし、hydenix 側の audio/network/hardware/gaming モジュールは有効化していない。
-必要になれば `hydenix.enable = true;` として `hydenix.gaming.enable = false;` のように
-個別に絞り込むこともできる。
+dotnix は audio / boot / network を移行前から独自モジュールとして持っており (`modules/nixos/`)、 `hydenix.gaming` (Steam / Lutris 等) は元々使っていない。そのため `hydenix.enable` は既定値の `false` のままにし、hydenix 側の audio/network/hardware/gaming モジュールは有効化していない。必要になれば `hydenix.enable = true;` として `hydenix.gaming.enable = false;` のように個別に絞り込むこともできる。
 
 ## 評価の流れ
 
@@ -97,48 +77,28 @@ flake.nix
 | `editors.default` | `"nvim"` | 既定エディタ、mimeApps もこれに追従 |
 | `shell.enable` | `false` | zsh/nushell/starship は `modules/home/programs/` 側で管理しており衝突するため丸ごと無効化 |
 
-`hydenix.hm.git` (本家 issue #169 のバグにより削除されたオプション) は
-`modules/home/programs/git.nix` の素の `programs.git.settings.user` に統合済み。
-`hydenix.hm.hyprland.pyprland` はフォーク側で削除されている (scratchpad 等が使えない、既知の制約)。
+`hydenix.hm.git` (本家 issue #169 のバグにより削除されたオプション) は `modules/home/programs/git.nix` の `programs.git.settings.user` に統合済み。`hydenix.hm.hyprland.pyprland` はフォーク側で削除されている (その結果 scratchpad 等が使えない)。
 
 ## mutable ファイルの上書き (waybar clock / hyprlock フォント)
 
-HyDE はテーマ切り替え時にスクリプトが設定ファイルを書き換える前提のため、`mutable = true` を付けた
-`home.file` は symlink ではなくコピーとして配置される (詳細は hydenix リポジトリの
-`docs-ja/04-mutable-files.md`)。**この仕組みの上で個人カスタマイズを行う場合、hydenix 側が
-同じパスに `mutable = true` を設定していると、上書きする側にも `mutable = true` を付けないと
-activation の `cp` で結果が戻されてしまう。**
+HyDE はテーマ切り替え時にスクリプトが設定ファイルを書き換える前提のため、`mutable = true` を付けた `home.file` は symlink ではなくコピーとして配置される (詳細は hydenix リポジトリの `docs-ja/04-mutable-files.md` を参照)。**この仕組み上、自分用のカスタマイズを行う場合、hydenix 側が同じパスに `mutable = true` を設定していると、上書きする側にも `mutable = true` を付けないとactivation の `cp` で結果が戻されてしまう。**
 
-[home/santamn.nix](../home/santamn.nix) では waybar の時計フォーマットと hyprlock のフォントを
-この方法で上書きしている。ただし waybar 側は `.config/waybar/modules` ディレクトリ全体が
-`recursive` コピーで配置されるため、個別ファイルの上書きが確実に効く保証はない
-(hydenix 本体の `modules/hm/waybar.nix` コメント参照)。**実機の rebuild で反映されない場合は、
-`includes.json` の参照先を差し替える方法に切り替えること。**
+[home/santamn.nix](../home/santamn.nix) では waybar の時計フォーマットと hyprlock のフォントをこの方法で上書きしている。ただし waybar 側は `.config/waybar/modules` ディレクトリ全体が `recursive` コピーで配置されるため、個別ファイルの上書きが確実に効く保証はない (hydenix 本体の `modules/hm/waybar.nix` コメント参照)。実機の rebuild で反映されない場合は、`includes.json` の参照先を差し替える方法に切り替えること。
 
 ## 指紋認証の設計 ([modules/nixos/fingerprint.nix](../modules/nixos/fingerprint.nix))
 
 指紋はあくまで補助手段で、どの場面でも必ずパスワード入力にフォールバックできるようにしてある。
 
 | 場面 | 挙動 |
-|---|---|
+|-----|------|
 | ログイン画面 (SDDM) | パスワードのみ。初回ログインをパスワードで行わないと gnome-keyring が解錠されないため意図的にこうしている |
-| ロック画面 (hyprlock) | **指紋とパスワードを同時に受け付ける** (hyprlock 内蔵の指紋対応を使用。PAM 側では `fprintAuth` を設定しない) |
+| ロック画面 (hyprlock) | 指紋とパスワードを同時に受け付ける (hyprlock 内蔵の指紋対応を使用。PAM 側では `fprintAuth` を設定しない) |
 | sudo / polkit ダイアログ | まず指紋を試行し、読み取りに規定回数失敗するかタイムアウトすると自動でパスワード入力に切り替わる |
 
 指紋の登録は `fprintd-enroll`、確認は `fprintd-verify`。
 
-## 既知の制約・落とし穴
+## 注意
 
-- **HyDE のバージョン差**: フォークの HyDE は本家より新しい (2026-03 時点)。記憶にある見た目と
-  完全一致しない場合は「フォークが壊れている」より先に「HyDE 側の変更」を疑うこと
-- **`mutable` ファイルは設定から消しても残る**: `home.file` から削除しても実体はホームに残り続ける。
-  テーマ関連がおかしくなったら `rm -rf ~/.config/hyde ~/.local/share/hyde ~/.cache/hyde` の後に
-  再度 `nixos-rebuild switch` でリセットできる
-- **`stateVersion` の二重定義**: hydenix が `system.stateVersion` / `home.stateVersion` を
-  `mkDefault` なしで `"25.05"` に設定しており、dotnix 側 (`hosts/*/default.nix`, `home/santamn.nix`)
-  も同じ値を設定している。型が `mergeEqualOption` のため両方が `"25.05"` である限りエラーにならないが、
-  **片方だけ値を変えると定義衝突でビルドが落ちる**。変更する場合は両方揃えること
-- **`mutableGeneration` 依存名の不一致**: hydenix 本体の `theme.nix` / `hyde.nix` /
-  `hyprland/default.nix` が存在しない activation エントリ名 `mutableGeneration` を参照しており
-  (正しくは `mutableFileGeneration`)、順序制約が効いていない。上流 (santamn/hydenix) 側の
-  修正候補として認識している既知の問題で、dotnix 側では対処不要
+- **`mutable` ファイルは設定から消しても残る**: `home.file` から削除しても実体はホームに残り続ける。テーマ関連がおかしくなったら `rm -rf ~/.config/hyde ~/.local/share/hyde ~/.cache/hyde` の後に再度 `nixos-rebuild switch` でリセットできる
+- **`stateVersion` の二重定義**: hydenix が `system.stateVersion` / `home.stateVersion` を `mkDefault` なしで `"25.05"` に設定しており、dotnix 側 (`hosts/*/default.nix`, `home/santamn.nix`)も同じ値を設定している。型が `mergeEqualOption` のため両方が `"25.05"` である限りエラーにならないが、片方だけ値を変えると定義衝突でビルドが落ちるので、変更する場合は両方揃えること
+- **`mutableGeneration` 依存名の不一致**: hydenix 本体の `theme.nix` / `hyde.nix` / `hyprland/default.nix` が存在しない activation エントリ名 `mutableGeneration` を参照しており(正しくは `mutableFileGeneration`)、順序制約が効いていない
