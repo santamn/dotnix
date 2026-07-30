@@ -4,7 +4,7 @@
 
 ## 1. NixOS をインストールする
 
-公式 ISO でインストールする。デスクトップ環境は何を選んでもよい (この flake が上書きする) が、最小構成 + デスクトップなしが無駄がない。ディスク暗号化 (LUKS) も好みで設定する。
+公式 ISO でインストールする。デスクトップ環境は何を選んでもよい (この flake が上書きする) が、最小構成 + デスクトップなしを選ぶと無駄がない。ディスク暗号化 (LUKS) も好みで設定する。
 
 ## 2. リポジトリを clone する
 
@@ -14,7 +14,7 @@ git clone https://github.com/<あなたのリポジトリ>/dotnix.git ~/dotnix
 cd ~/dotnix
 ```
 
-> **NOTE**: Neovim 設定のシンボリックリンクなどが `~/dotnix` を前提にしているため、置き場所は `~/dotnix` にすること。別の場所に置きたい場合は `hosts/<ホスト名>/default.nix` に `home-manager.users.<ユーザ名>.dotfiles.path = "/path/to/dotnix";` を書いて既定値を上書きする ([modules/home/dotfiles.nix](../modules/home/dotfiles.nix))。
+> **NOTE**: Neovim 設定のシンボリックリンクなどが `~/dotnix` を前提にしているため、置き場所は `~/dotnix` にすること。別の場所に置きたい場合は `hosts/<ホスト名>/default.nix` に `home-manager.users.<ユーザ名>.dotfiles.path = "/path/to/dotnix";` を書いて既定値を上書きせよ ([modules/home/dotfiles.nix](../modules/home/dotfiles.nix))。
 
 ## 3. ホスト用ディレクトリを作る
 
