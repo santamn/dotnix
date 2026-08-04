@@ -56,11 +56,12 @@ nixosConfigurations = {
 ## 5. 適用する
 
 ```bash
-sudo nixos-rebuild switch --flake ~/dotnix#my-new-machine
+nixos-rebuild switch --sudo --flake ~/dotnix#my-new-machine
 ```
 
-ホスト名が flake の設定名と一致していれば、次回からは `--flake ~/dotnix` だけでよい
-(`mkHost` が `networking.hostName` を設定するので、初回適用後は一致する)。
+ホスト名が flake の設定名と一致していれば、次回からは `--flake ~/dotnix` だけでよい(`mkHost` が `networking.hostName` を設定するので、初回適用後は一致する)。
+
+> **NOTE**: `sudo nixos-rebuild` と書くと flake の評価まで root で行われ、`~/dotnix/.git` に root 所有のファイルが作られてユーザ権限の git 操作が壊れるので、`--sudo` を付けてユーザとして起動すること (詳細は [README](../README.md#設定の適用))。
 
 ## 6. 初回セットアップ
 

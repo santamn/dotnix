@@ -13,17 +13,21 @@ NixOS + Home Manager によるOS環境設定。デスクトップ (Hyprland + Hy
 このリポジトリを NixOS マシンの `~/dotnix` に置いて次を実行:
 
 ```bash
-sudo nixos-rebuild switch --flake ~/dotnix
+nixos-rebuild switch --sudo --flake ~/dotnix
 ```
 
 ホスト名 (`thinkpad-x13-gen6` など) と同名の設定が自動で選択される。
+
+> **NOTE**: `sudo nixos-rebuild switch` ではなく `nixos-rebuild switch --sudo` を使うこと。
+> 前者は flake の評価まで root で走るため、作業ツリーが dirty なとき nix が `.git/objects` に root 所有のオブジェクトを書き込み、以後ユーザ権限の `git` / `nix flake update` が `insufficient permission for adding an object to repository database` で失敗するようになる。
+> `--sudo` (新しめの版では `--elevate=sudo`) なら評価は自分のユーザで行われ、権限が要る activation だけが sudo 経由になる。
 
 ## 更新 (flake inputs のアップデート)
 
 ```bash
 cd ~/dotnix
 nix flake update
-sudo nixos-rebuild switch --flake .
+nixos-rebuild switch --sudo --flake .
 ```
 
 ## hydenix ベース構成への移行 (初回のみ)
@@ -37,7 +41,7 @@ rm -rf ~/.config/waybar ~/.config/rofi ~/.config/wlogout ~/.config/hypr
 ```
 
 1. `nix flake update` を実行して flake.lock を新しい inputs (hydenix 経由) で作り直す
-2. `sudo nixos-rebuild switch --flake ~/dotnix` を実行する
+2. `nixos-rebuild switch --sudo --flake ~/dotnix` を実行する
 3. うまく当たらないテーマ・レイアウトがあれば `rm -rf ~/.config/hyde ~/.local/share/hyde ~/.cache/hyde` の後に再度 switch する ([architecture.md](docs/architecture.md) の「既知の制約・落とし穴」参照)
 
 ## ディレクトリ構成
