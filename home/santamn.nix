@@ -97,7 +97,8 @@
     # --- Editors ---
     editors = {
       enable = true;
-      neovim = true;
+      # hydenix 側は素の pkgs.neovim を home.packages に足すだけなので無効化する: programs.neovim と重複してエラーになる
+      neovim = false;
       vim = false;
       vscode = {
         enable = false;
