@@ -7,6 +7,7 @@
     ./fingerprint.nix
     ./fonts.nix
     ./home-manager.nix
+    ./hydenix.nix
     ./kdeconnect.nix
     ./locale.nix
     ./network.nix
