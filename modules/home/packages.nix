@@ -1,6 +1,9 @@
 # 個別モジュールを持たないパッケージ類
 {pkgs, ...}: {
   home.packages = with pkgs; [
+    # ブルーライトフィルタ (HyDE の startup.conf が起動する)
+    hyprsunset
+
     # --- CLI tools ---
     wine64 # Windows アプリケーション互換レイヤー
     fastfetch # システム情報表示
