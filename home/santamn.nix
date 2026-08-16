@@ -1,5 +1,5 @@
 # ユーザ santamn の Home Manager 設定のエントリポイント
-{...}: {
+{pkgs, ...}: {
   imports = [
     ../modules/home
   ];
@@ -61,6 +61,8 @@
           # 中クリックペーストを無効化
           middle_click_paste = false
         }
+        # 通知センター (swaync) の開閉
+        bind = SUPER SHIFT, N, exec, swaync-client -t -sw
       '';
 
       hypridle = {
@@ -92,6 +94,12 @@
           }
         '';
       };
+    };
+
+    # --- Notifications ---
+    notifications = {
+      dunst.enable = false;
+      swaync.enable = true;
     };
 
     # --- Editors ---
@@ -129,12 +137,24 @@
     shell.enable = false;
   };
 
-  # ===========================
-  # 旧 hydenix 使用時のカスタマイズ (mutable ファイルの上書き)
-  # ===========================
-  # 注意: hydenix 側が同じパスを mutable = true で配置しているため、
-  # 上書きする側にも mutable = true を付けないと activation の cp で戻される
-  # (docs-ja/04-mutable-files.md 参照)。
+  # HyDE の startup.conf は `exec-once` で dunst を決め打ちしているため
+  # デーモンの起動を自前の systemd ユーザサービスで行う
+  systemd.user.services.swaync = {
+    Unit = {
+      Description = "SwayNotificationCenter";
+      PartOf = ["graphical-session.target"];
+      After = ["graphical-session.target"];
+      ConditionEnvironment = "WAYLAND_DISPLAY";
+    };
+    Service = {
+      Type = "dbus";
+      BusName = "org.freedesktop.Notifications";
+      ExecStart = "${pkgs.swaynotificationcenter}/bin/swaync";
+      Restart = "on-failure";
+    };
+    Install.WantedBy = ["graphical-session.target"];
+  };
+
   home.file = {
     # 日付の表示フォーマットを YYYY-MM-DD に変更
     ".config/waybar/modules/clock.jsonc" = {
