@@ -123,11 +123,11 @@
         "treefmt-nix": "treefmt-nix"
       },
       "locked": {
-        "lastModified": 1786836252,
-        "narHash": "sha256-sxeyIsIudG3qv+qnjlAP3qDixXNHngGAyIyFZSR4hik=",
+        "lastModified": 1786867192,
+        "narHash": "sha256-ya2jEpQQM5XlPglnvGsPIv8fS3Muh1VR8YqtpbM1PFI=",
         "owner": "santamn",
         "repo": "hydenix",
-        "rev": "c2d716cd942270682d51a272f7504f5a7b511500",
+        "rev": "7da8d4e3e082963676d0e932d7501e2cdfae4cdc",
         "type": "github"
       },
       "original": {
@@ -496,11 +496,11 @@
         ]
       },
       "locked": {
-        "lastModified": 1786764142,
-        "narHash": "sha256-PZHI3Rj4VgqcJulygSn7bLyN0y4Glo3X90ZWv1PRa+o=",
+        "lastModified": 1786851072,
+        "narHash": "sha256-37fwforx11ROXx7xKQMNUrcC1vRvJlvj+HFrkIjzUh8=",
         "owner": "osipog",
         "repo": "nix-firefox-addons",
-        "rev": "b1e13d5a4b8cf635e118c1073e5b60127c9c0744",
+        "rev": "f5e12881eaa59797bf8119ff61864d20871bb7ae",
         "type": "github"
       },
       "original": {
