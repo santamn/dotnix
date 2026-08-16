@@ -10,7 +10,11 @@
       background-opacity = "0.70";
 
       font-size = 10;
-      font-family = "FiraCode Nerd Font";
+      # FiraCode に日本語グリフが無いため、明示しないと中華フォント Noto Sans CJK SC になる
+      font-family = [
+        "FiraCode Nerd Font"
+        "Noto Sans Mono CJK JP"
+      ];
     };
   };
 }

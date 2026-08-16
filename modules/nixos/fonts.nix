@@ -28,7 +28,7 @@
         ];
         monospace = [
           "FiraCode Nerd Font"
-          "Noto Sans CJK JP"
+          "Noto Sans Mono CJK JP"
         ];
         emoji = ["Noto Color Emoji"];
       };
