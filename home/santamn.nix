@@ -67,9 +67,9 @@
         enable = true;
         overrideConfig = ''
           general {
-            lock_cmd = pidof hyprlock || hyprlock       # dbus/sysd lock command (loginctl lock-session)
-            before_sleep_cmd = loginctl lock-session    # command to run before sleep
-            after_sleep_cmd = hyprctl dispatch dpms on  # command to run after sleep
+            lock_cmd = pidof hyprlock || hyde-shell lockscreen.sh # dbus/sysd lock command (loginctl lock-session)
+            before_sleep_cmd = loginctl lock-session              # command to run before sleep
+            after_sleep_cmd = hyprctl dispatch dpms on            # command to run after sleep
           }
 
           # 15分で画面をロック
