@@ -1,5 +1,9 @@
 # ユーザ santamn の Home Manager 設定のエントリポイント
-{pkgs, ...}: {
+{
+  lib,
+  pkgs,
+  ...
+}: {
   imports = [
     ../modules/home
   ];
@@ -137,25 +141,28 @@
     shell.enable = false;
   };
 
-  # HyDE の startup.conf は `exec-once` で dunst を決め打ちしているため
-  # デーモンの起動を自前の systemd ユーザサービスで行う
-  systemd.user.services.swaync = {
-    Unit = {
-      Description = "SwayNotificationCenter";
-      PartOf = ["graphical-session.target"];
-      After = ["graphical-session.target"];
-      ConditionEnvironment = "WAYLAND_DISPLAY";
-    };
-    Service = {
-      Type = "dbus";
-      BusName = "org.freedesktop.Notifications";
-      ExecStart = "${pkgs.swaynotificationcenter}/bin/swaync";
-      Restart = "on-failure";
-    };
-    Install.WantedBy = ["graphical-session.target"];
-  };
-
   home.file = {
+    # 通知デーモンの起動コマンドを dunst から swaync に差し替え
+    ".config/hyde/config.toml".source = lib.mkForce (
+      pkgs.writeText "hyde-config.toml" (
+        builtins.readFile "${pkgs.hyde}/Configs/.config/hyde/config.toml"
+        + ''
+          [hyprland-start]
+          notifications = "hyde-shell app -u hyde-$XDG_SESSION_DESKTOP-notifications.service -t service -- swaync"
+        ''
+      )
+    );
+
+    # waybar の通知モジュールを NixOS で動くようにする
+    ".local/share/waybar/modules/custom-swaync.jsonc" = {
+      text =
+        builtins.replaceStrings
+        [''"exec-if": "swaync-client --count --skip-wait 1>2 /dev/null"'' ''"exec": "pgrep -x swaync && swaync-client -swb"'']
+        [''"exec-if": "swaync-client --count --skip-wait >/dev/null 2>&1"'' ''"exec": "swaync-client -swb"'']
+        (builtins.readFile "${pkgs.hyde}/Configs/.local/share/waybar/modules/custom-swaync.jsonc");
+      force = true;
+    };
+
     # 日付の表示フォーマットを YYYY-MM-DD に変更
     ".config/waybar/modules/clock.jsonc" = {
       text = builtins.toJSON {
