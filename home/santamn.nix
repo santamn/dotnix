@@ -153,16 +153,6 @@
       )
     );
 
-    # waybar の通知モジュールを NixOS で動くようにする
-    ".local/share/waybar/modules/custom-swaync.jsonc" = {
-      text =
-        builtins.replaceStrings
-        [''"exec-if": "swaync-client --count --skip-wait 1>2 /dev/null"'' ''"exec": "pgrep -x swaync && swaync-client -swb"'']
-        [''"exec-if": "swaync-client --count --skip-wait >/dev/null 2>&1"'' ''"exec": "swaync-client -swb"'']
-        (builtins.readFile "${pkgs.hyde}/Configs/.local/share/waybar/modules/custom-swaync.jsonc");
-      force = true;
-    };
-
     # 日付の表示フォーマットを YYYY-MM-DD に変更
     ".config/waybar/modules/clock.jsonc" = {
       text = builtins.toJSON {
