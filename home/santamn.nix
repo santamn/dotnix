@@ -167,6 +167,21 @@
       mutable = true;
     };
 
+    # 天気モジュールから地名を消す
+    ".config/waybar/modules/custom-weather.jsonc" = {
+      text = builtins.toJSON {
+        "custom/weather" = {
+          exec = "WEATHER_SHOW_LOCATION=False hyde-shell weather";
+          tooltip = true;
+          format = "{0}";
+          interval = 30;
+          return-type = "json";
+        };
+      };
+      force = true;
+      mutable = true;
+    };
+
     # ロック画面のフォントを SF Pro 風に変更
     ".config/hypr/hyprlock/theme.conf" = {
       text = "source = ./SF Pro.conf\n";
