@@ -18,6 +18,11 @@ return {
       notifications = true,                                         -- enable notifications at start
       formatting = false,                                           -- conform側で format_on_save を制御するため、AstroLSPのformattingは無効化
     },
+    -- Neovim の Tree-sitter 機能 (ハイライト・インデント・textobjects) の設定。
+    -- パーサは Nix が供給するため、実行時のダウンロードとコンパイルは行わない
+    treesitter = {
+      auto_install = false,
+    },
     -- Diagnostics configuration (for vim.diagnostics.config({...})) when diagnostics are on
     diagnostics = {
       virtual_text = true,

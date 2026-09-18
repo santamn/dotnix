@@ -6,7 +6,9 @@
 #   LSP サーバー・フォーマッタは下の home.packages で入れて PATH 経由で使わせる
 # - プロジェクト固有のツールチェーン (rust-analyzer, gopls など) は
 #   各プロジェクトの devShell + direnv で提供する (templates/ 参照)
-# - Tree-sitter パーサも Nix で入れる (実行時のコンパイル失敗を避けるため)
+# - Tree-sitter パーサは Nix が全言語分を供給し、実行時のダウンロードと
+#   コンパイルは一切しない。そのためのビルドツール (gcc, tree-sitter CLI など) も
+#   ここには置かない。必要になったら各プロジェクトの devShell で入れる
 {
   config,
   pkgs,
@@ -40,7 +42,6 @@ in {
     wl-clipboard # クリップボード連携
     nodejs # 一部プラグインと LSP の実行環境
     gdu # ディスク使用量表示
-    tree-sitter # パーサを手動追加したい場合の :TSInstall 用 CLI
 
     # --- 常時使う LSP・フォーマッタ (旧 Mason 管理分) ---
     # 言語プロジェクト固有のもの (rust-analyzer 等) は devShell 側で入れる
@@ -52,15 +53,6 @@ in {
     statix # Nix 静的解析
     nixpkgs-fmt # Nix フォーマッタ
     nix-prefetch # SHA256 ハッシュ取得
-
-    # --- ネイティブ拡張のビルドや :TSInstall のフォールバック用 ---
-    gnumake
-    gcc
-    unzip
-    wget
-    gnutar
-    curl
-    gzip
   ];
 
   # ~/.config/nvim をリポジトリの nvim/ への直リンクに:
