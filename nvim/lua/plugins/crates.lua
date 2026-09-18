@@ -9,12 +9,12 @@ return {
   dependencies = { "nvim-lua/plenary.nvim" },
   opts = {
     -- 補完機能の設定
+    -- (AstroNvim の補完は blink.cmp。nvim-cmp は入っていないので cmp 連携は設定しない)
     completion = {
-      cmp = { enabled = true }, -- nvim-cmp との連携を有効化
       crates = {
-        enabled = true,         -- クレート自体の補完を有効化
-        max_results = 8,        -- 補完候補の最大表示数
-        min_chars = 3,          -- 補完を開始する文字数
+        enabled = true,  -- クレート自体の補完を有効化
+        max_results = 8, -- 補完候補の最大表示数
+        min_chars = 3,   -- 補完を開始する文字数
       },
     },
     -- LSPのような機能（定義ジャンプやホバー表示など）の設定

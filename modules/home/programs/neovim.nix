@@ -50,8 +50,8 @@ in {
 
     # --- Nix 開発ツール ---
     nil # Nix Language Server
-    statix # Nix 静的解析
-    nixpkgs-fmt # Nix フォーマッタ
+    statix # Nix 静的解析 (コマンドラインから使う。エディタ連携はしていない)
+    alejandra # Nix フォーマッタ。このリポジトリの .nix はこのスタイルで書かれている
     nix-prefetch # SHA256 ハッシュ取得
   ];
 
