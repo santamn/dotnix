@@ -15,6 +15,7 @@ main ブランチの `install_dir` 既定値は `stdpath("data")/site` で、Nix
 移行のついでに、Tree-sitter パーサの供給を Nix に一本化した。開発環境は devShell で揃えるという方針に合わせ、`~/.local/share` に可変な状態を溜めないようにする。
 
 - `astrocore` に `treesitter.auto_install = false` を入れた
+- `~/.local/share/nvim/site/queries` にもクエリを配置した。main ブランチはクエリをプラグイン内の `runtime/queries` に持っており、そこは runtimepath に載らない。`:TSInstall` を封じた以上、Nix が置かないとハイライトが全滅する (詳細は [neovim.md](neovim.md))
 - `home.packages` から `tree-sitter` CLI とビルドツール (`gcc`, `gnumake`, `unzip`, `wget`, `gnutar`, `curl`, `gzip`) を削除した。`astrocore.treesitter.install()` は `tree-sitter` が PATH にないと即 return するので、これ自体が歯止めになっている
 - `nodejs` も削除した。`programs.neovim.withNodeJs` は既定 false で、Mason も無効、常用の LSP もすべてネイティブバイナリのため。Node が要るプロジェクトでは devShell に入れる
 
@@ -56,7 +57,7 @@ nixos-rebuild switch --flake .    # nh を使っているなら nh os switch
 1. `nvim --version` が 0.11 以上であること (0.12 系を想定している)
 2. `nvim` を起動し、`:Lazy sync` でエラーが出ないこと
 3. `:checkhealth astronvim` と `:checkhealth vim.lsp` を見る。`:LspInfo` は v6 で廃止されているので使わない
-4. **Tree-sitter が今回の要**。Lua、Nix、Rust、Go のファイルをそれぞれ開いてハイライトが効いているか目視する。効いていない場合は `:lua vim.print(require("astrocore.treesitter").installed())` でパーサが見えているかを確認する。`:checkhealth vim.treesitter` も見る
+4. **Tree-sitter が今回の要**。`:checkhealth nvim-treesitter` の Installed languages 表で、lua・nix・rust・go の H (highlights) 列が `✓` になっているかを見る。色が付いているかの目視では判定できない。パーサもクエリも無いまま正規表現の syntax だけが効いている状態と区別がつかないため。`.` が並ぶならクエリが、行そのものが無いならパーサが届いていない。Requirements の `tree-sitter-cli not found` は捨てた機能なので無視してよい
 5. Rust プロジェクトの devShell に入って `nvim src/main.rs`。rust-analyzer が起動し、インレイヒントと CodeLens が出るか。`<Leader>rr` (runnables) と `K` (ホバーアクション) を叩く
 6. `Cargo.toml` を開いて crates.nvim のバージョン表示が出るか
 7. **保存時フォーマットが1回だけ走ること**。Rust、Lua、Nix のファイルで試す。特に `.nix` は alejandra に差し替えたので、保存して差分が出ないことを確認する

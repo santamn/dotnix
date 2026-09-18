@@ -39,7 +39,9 @@ PATH にバイナリが無いサーバーは起動されずに黙って飛ばさ
 
 ### Tree-sitter パーサーも Nix で入れる
 
-tree-sitter の全てのパーサー (`pkgs.vimPlugins.nvim-treesitter.withAllGrammars`) を `~/.local/share/nvim/site/parser` に[配置しており](../modules/home/programs/neovim.nix)、実行時にはダウンロードやコンパイルは発生しない。nvim-treesitter (main ブランチ) の `install_dir` 既定値がちょうどこの場所なので、Lua 側でパーサの置き場所を設定する必要はない。
+tree-sitter のパーサー一式 (`pkgs.vimPlugins.nvim-treesitter.withAllGrammars`) を `~/.local/share/nvim/site/parser` に、クエリを `~/.local/share/nvim/site/queries` に[配置しており](../modules/home/programs/neovim.nix)、実行時にはダウンロードやコンパイルは発生しない。nvim-treesitter (main ブランチ) の `install_dir` 既定値がちょうどこの場所なので、Lua 側で置き場所を設定する必要はない。
+
+パーサーだけでは足りない点に注意。main ブランチはクエリをプラグイン内の `runtime/queries` に持っていて、この場所は runtimepath に載らない。本来は `:TSInstall` が `site/queries` へリンクを張るところを Nix が肩代わりしている。クエリが無いと `vim.treesitter.query.get` が nil を返し、AstroCore がハイライトも indent も fold も有効にしない。正規表現の syntax は効いたままなので見た目では気づきにくい。確認は `:checkhealth nvim-treesitter` の Installed languages 表で、H (highlights) 列が `✓` になっているかを見る。
 
 **`:TSInstall` は使えない。** 実行時コンパイルを完全に捨てており、`tree-sitter` CLI もコンパイラも `home.packages` に入れていない。パーサを追加・更新するときは nixpkgs を更新する。この決定の経緯は [astronvim-v6-migration.md](astronvim-v6-migration.md) を参照。
 
