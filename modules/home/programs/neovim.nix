@@ -1,22 +1,16 @@
 # Neovim: バイナリと外部ツールだけを Nix で管理し、設定本体は普通の Lua で書く
 #
-# - 設定 (~/.config/nvim) はこのリポジトリの nvim/ へのシンボリックリンク。
-#   Lua ファイルの編集は nixos-rebuild なしで即座に反映される
-# - Mason は使わない (FHS 前提のビルド済みバイナリは NixOS で動かないため)。
-#   LSP サーバー・フォーマッタは下の home.packages で入れて PATH 経由で使わせる
-# - プロジェクト固有のツールチェーン (rust-analyzer, gopls など) は
-#   各プロジェクトの devShell + direnv で提供する (templates/ 参照)
-# - Tree-sitter パーサは Nix が全言語分を供給し、実行時のダウンロードと
-#   コンパイルは一切しない。そのためのビルドツール (gcc, tree-sitter CLI など) も
-#   ここには置かない。必要になったら各プロジェクトの devShell で入れる
+# - 設定 (~/.config/nvim) はこのリポジトリの nvim/ へのシンボリックリンクとして管理される
+# - Mason は使わない: FHS 前提のビルド済みバイナリは NixOS で動かないため
+# - プロジェクト固有のツールチェーン (rust-analyzer, gopls など) は各プロジェクトの devShell + direnv で入れる
 {
   config,
   pkgs,
   ...
 }: let
-  # nvim-treesitter の全言語パーサを1つのディレクトリに集約したもの
-  treesitterParsers = pkgs.symlinkJoin {
-    name = "nvim-treesitter-parsers";
+  # nvim-treesitter の全言語パーサとクエリを1つのディレクトリに集約したもの
+  treesitterRuntime = pkgs.symlinkJoin {
+    name = "nvim-treesitter-runtime";
     paths = pkgs.vimPlugins.nvim-treesitter.withAllGrammars.dependencies;
   };
 in {
@@ -27,8 +21,8 @@ in {
     vimAlias = true;
 
     # Home Manager もラッパ用の初期化 Lua (プロバイダ無効化など) を生成するが、
-    # それを ~/.config/nvim/init.lua に書き出すと下のシンボリックリンクと衝突して
-    # activation が失敗する。nvim 起動時の --cmd 経由で読ませることで両立させる
+    # それを ~/.config/nvim/init.lua に書き出すと下のシンボリックリンクと衝突してactivation が失敗するため
+    # nvim 起動時の --cmd 経由で読ませることで両立させる
     sideloadInitLua = true;
 
     # Ruby / Python3 のリモートプラグインは使わないため無効化 (26.05 以降の既定値)
@@ -49,18 +43,16 @@ in {
 
     # --- Nix 開発ツール ---
     nil # Nix Language Server
-    statix # Nix 静的解析 (コマンドラインから使う。エディタ連携はしていない)
-    alejandra # Nix フォーマッタ。このリポジトリの .nix はこのスタイルで書かれている
+    statix # 静的解析ツール: コマンドラインから使う。エディタ連携はしていない
+    alejandra # フォーマッタ
     nix-prefetch # SHA256 ハッシュ取得
   ];
 
-  # ~/.config/nvim をリポジトリの nvim/ への直リンクに:
-  # どちらを編集しても即座に反映される (rebuild 不要)
+  # ~/.config/nvim をリポジトリの nvim/ への直リンクに:　どちらを編集しても即座に反映される
   xdg.configFile."nvim".source =
     config.lib.file.mkOutOfStoreSymlink "${config.dotfiles.path}/nvim";
 
-  # Tree-sitter パーサを Neovim の runtimepath (~/.local/share/nvim/site) に配置する。
-  # nvim-treesitter プラグイン本体は lazy.nvim が管理するが、パーサの実体は
-  # ここで Nix が供給するため実行時のダウンロード・コンパイルは発生しない
-  xdg.dataFile."nvim/site/parser".source = "${treesitterParsers}/parser";
+  # Tree-sitter のパーサとクエリを Neovim の runtimepath (~/.local/share/nvim/site) に配置
+  xdg.dataFile."nvim/site/parser".source = "${treesitterRuntime}/parser";
+  xdg.dataFile."nvim/site/queries".source = "${treesitterRuntime}/queries";
 }

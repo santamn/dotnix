@@ -1,5 +1,4 @@
 # direnv: プロジェクトごとに devShell を自動で切り替える
-# (.envrc と flake.nix を置いたディレクトリに cd すると開発環境が有効になる)
 {...}: {
   programs.direnv = {
     enable = true;

@@ -6,15 +6,10 @@
 }: let
   # Home Manager が管理する Firefox プロファイルの置き場所
   # 旧来の ~/.mozilla/firefox ではなく XDG 準拠の位置に置く
-  # (Home Manager 26.05 の新既定と同じ。~/.zen/profiles.ini からも参照するため
-  #  二重管理にならないようここを唯一の定義とする)
   firefoxConfigPath = "${config.xdg.configHome}/mozilla/firefox";
 in {
-  # ===========================
-  # Zen Browser Configuration
-  # ===========================
   # Zen Browser は既定で ~/.zen を使うが、プロファイルの中身は Home Manager が
-  # 上記 firefoxConfigPath で管理する。~/.zen/profiles.ini からそこを指させる
+  # firefoxConfigPath で管理する。~/.zen/profiles.ini からそこを指させる
   home.file.".zen/profiles.ini".text = ''
     [Profile0]
     Name=default
