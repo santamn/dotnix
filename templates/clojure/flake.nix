@@ -11,18 +11,18 @@
   };
 
   outputs = {nixpkgs, ...}: let
-    systems = ["x86_64-linux" "aarch64-linux" "aarch64-darwin"];
+    systems = ["x86_64-linux" "aarch64-darwin"];
     forAllSystems = f:
       nixpkgs.lib.genAttrs systems (system: f nixpkgs.legacyPackages.${system});
   in {
     devShells = forAllSystems (pkgs: {
       default = pkgs.mkShell {
         packages = with pkgs; [
-          jdk # Clojure の実行には JVM が要る
-          clojure # clj / clojure コマンド
-          clojure-lsp # LSP (astrolsp に clojure_lsp として登録済み)。cljfmt による整形も担当
-          clj-kondo # リンタ。clojure-lsp が内部から呼ぶほかコマンドラインでも使える
-          babashka # 起動の速いスクリプト用 Clojure
+          jdk
+          clojure
+          clojure-lsp # LSP: astrolsp に clojure_lsp として登録済みで、cljfmt による整形も担当
+          clj-kondo # リンタ: clojure-lsp が内部から呼ぶほかコマンドラインでも使える
+          babashka
         ];
       };
     });
