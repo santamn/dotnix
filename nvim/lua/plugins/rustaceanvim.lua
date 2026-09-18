@@ -8,9 +8,9 @@ return {
     -- rustaceanvim は vim.g.rustaceanvim に設定テーブルを代入する方式で設定を行う
     vim.g.rustaceanvim = {
       -- ツール全般の設定
+      -- (フロートの枠線は AstroNvim v6 が設定する winborder = "rounded" に従う)
       tools = {
         hover_actions = { replace_builtin_hover = false },
-        float_win_config = { border = "rounded" },
         inlay_hints = {
           auto = true,
           show_parameter_hints = true,

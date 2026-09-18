@@ -44,25 +44,24 @@ return {
       "nil_ls",  -- Nix
       "gopls",   -- Go (devShell からバイナリを供給)
     },
-    -- customize language server configuration options passed to `lspconfig`
+    -- `vim.lsp.config(server, opts)` に渡す設定。["*"] は全サーバー共通の既定値になる
     config = {
+      -- ["*"] = { capabilities = { textDocument = { foldingRange = { dynamicRegistration = false } } } },
       -- clangd = { capabilities = { offsetEncoding = "utf-8" } },
     },
-    -- customize how language servers are attached
+    -- サーバーの起動方法をサーバー単位で差し替える。["*"] が既定 (vim.lsp.enable)
     handlers = {
-      -- a function without a key is simply the default handler, functions take two parameters, the server name and the configured options table for that server
-      -- function(server, opts) require("lspconfig")[server].setup(opts) end
-
-      -- the key is the server that is being setup with `lspconfig`
-      -- rust_analyzer = false, -- setting a handler to false will disable the set up of that language server
-      -- pyright = function(_, opts) require("lspconfig").pyright.setup(opts) end -- or a custom handler function can be passed
+      -- ["*"] = function(server) vim.lsp.enable(server) end
+      -- 解決済みの設定テーブルが要るときは vim.lsp.config[server] を読む
+      -- rust_analyzer = false, -- false にするとそのサーバーの起動を止められる
     },
     -- Configure buffer local auto commands to add when attaching a language server
     autocmds = {
       -- first key is the `augroup` to add the auto commands to (:h augroup)
+      -- カーソルを止めたときに診断をフロートで出す
+      -- (cond は付けない。publishDiagnostics は server_capabilities に現れないため
+      --  Client:supports_method が常に true を返し、条件として機能しない)
       lsp_document_diagnostics = {
-        -- condition to verify if the client supports diagnostics
-        cond = "textDocument/publishDiagnostics",
         {
           event = { "CursorHold" },
           desc = "Show diagnostics on cursor hold",

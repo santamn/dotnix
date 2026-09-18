@@ -57,8 +57,8 @@ return {
       end,
     },
     -- ポップアップウィンドウの見た目設定
+    -- (枠線は AstroNvim v6 が設定する winborder = "rounded" に従う)
     popup = {
-      border = "rounded",       -- 枠線を角丸にする
       show_version_date = true, -- バージョンの公開日を表示する
       max_height = 30,
       min_width = 20,
