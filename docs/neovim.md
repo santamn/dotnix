@@ -2,7 +2,7 @@
 
 ## 基本方針: Lua で設定してバイナリを Nix で管理
 
-- 設定本体は [nvim/](../nvim/) にある普通の Lua (AstroNvim v5 + lazy.nvim)
+- 設定本体は [nvim/](../nvim/) にある普通の Lua (AstroNvim v6 + lazy.nvim)
   - `~/.config/nvim` はこのディレクトリへのシンボリックリンクなので Lua の編集は nixos-rebuild なしで即座に反映される
 - Nix が担当するもの ([modules/home/programs/neovim.nix](../modules/home/programs/neovim.nix)):
   - Neovim 本体
@@ -15,7 +15,7 @@
 
 ### Mason は使わない
 
-Mason が配布するビルド済みバイナリは動的にリンクされるため NixOS では動かないことが多い。このリポジトリでは Mason 関連プラグインを無効化してある ([nvim/lua/plugins/mason.lua](../nvim/lua/plugins/mason.lua))。
+Mason が配布するビルド済みバイナリは動的にリンクされるため NixOS では動かないことが多い。このリポジトリでは Mason 関連プラグインを無効化してある ([nvim/lua/plugins/disabled.lua](../nvim/lua/plugins/disabled.lua))。
 
 ツールの追加方法は次のとおり:
 
@@ -33,23 +33,46 @@ LSP の追加には2箇所必要:
 | バイナリの供給 | Nix (`home.packages` または devShell) |
 | 起動する宣言 | astrolsp の `servers` |
 
+PATH にバイナリが無いサーバーは起動されずに黙って飛ばされる。そのため devShell でしか入らないものを `servers` に並べておいても、そのプロジェクトの外でエラーが出ることはない。
+
+フォーマッタは conform.nvim に一本化してある ([nvim/lua/plugins/conform.lua](../nvim/lua/plugins/conform.lua))。`formatters_by_ft` に載っていないファイルタイプは LSP の整形に落ちるので、LSP が整形できる言語 (Haskell の HLS、Clojure の clojure-lsp など) は何も書かなくてよい。
+
 ### Tree-sitter パーサーも Nix で入れる
 
-tree-sitter の全てのパーサー (`pkgs.vimPlugins.nvim-treesitter.withAllGrammars`) を `~/.local/share/nvim/site/parser` に[配置しており](modules/home/programs/neovim.nix#L16-L20)、実行時にはダウンロードやコンパイルは発生しない。
-もし特定言語でハイライトが崩れる場合は `:TSInstall <lang>` を実行することで lazy.nvim 側のバージョンに合わせたパーサを入れ直すことができる。
+tree-sitter の全てのパーサー (`pkgs.vimPlugins.nvim-treesitter.withAllGrammars`) を `~/.local/share/nvim/site/parser` に[配置しており](../modules/home/programs/neovim.nix)、実行時にはダウンロードやコンパイルは発生しない。nvim-treesitter (main ブランチ) の `install_dir` 既定値がちょうどこの場所なので、Lua 側でパーサの置き場所を設定する必要はない。
+
+**`:TSInstall` は使えない。** 実行時コンパイルを完全に捨てており、`tree-sitter` CLI もコンパイラも `home.packages` に入れていない。パーサを追加・更新するときは nixpkgs を更新する。この決定の経緯は [astronvim-v6-migration.md](astronvim-v6-migration.md) を参照。
 
 ## プロジェクトごとの devShell (direnv)
 
 言語ツールチェーンはグローバルには入れず、プロジェクトごとの devShell によって提供する。 `.envrc` を用意することでディレクトリを変更するだけで環境が切り替わり、Neovim の LSP もそのプロジェクトのツールチェーンを使うようになっている。
 
-新しい Rust プロジェクトの始め方:
+雛形は [templates/](../templates/) にある:
+
+| 言語 | 展開コマンド | 入るもの |
+|---|---|---|
+| Rust | `nix flake init -t ~/dotnix#rust` | rust-analyzer / clippy / rustfmt / codelldb |
+| Go | `nix flake init -t ~/dotnix#go` | gopls / goimports / golangci-lint / delve |
+| Python | `nix flake init -t ~/dotnix#python` | uv / basedpyright / ruff |
+| Haskell | `nix flake init -t ~/dotnix#haskell` | GHC / cabal / HLS / hlint / ormolu |
+| Clojure | `nix flake init -t ~/dotnix#clojure` | JDK / clojure / clojure-lsp / clj-kondo / babashka |
+
+新しいプロジェクトの始め方 (Rust の例):
 
 ```bash
 mkdir myproject && cd myproject
-nix flake init -t ~/dotnix#rust   # flake.nix / .envrc の雛形を展開
+nix flake init -t ~/dotnix#rust   # flake.nix / .envrc / .gitignore の雛形を展開
 direnv allow
 cargo init
 ```
+
+言語を増やすときは3箇所に手を入れる:
+
+| 役割 | 場所 |
+|---|---|
+| devShell の雛形 | `templates/<言語>/` (flake.nix と .envrc と .gitignore) |
+| 雛形の登録 | ルートの [flake.nix](../flake.nix) の `templates` |
+| LSP の起動宣言 | astrolsp の `servers` |
 
 ## Rust の開発体験
 

@@ -46,7 +46,7 @@ rm -rf ~/.config/waybar ~/.config/rofi ~/.config/wlogout ~/.config/hypr
 
 ## ディレクトリ構成
 
-```
+```text
 .
 ├── flake.nix                 # エントリポイント (inputs とホスト一覧、hydenix を依存に追加)
 ├── hosts/                    # ホスト (マシン) ごとの設定
@@ -60,7 +60,7 @@ rm -rf ~/.config/waybar ~/.config/rofi ~/.config/wlogout ~/.config/hypr
 ├── home/
 │   └── santamn.nix           # ユーザごとの Home Manager エントリポイント + hydenix.hm オプション
 ├── nvim/                     # Neovim の Lua 設定 (~/.config/nvim にシンボリックリンクされる)
-├── templates/                # プロジェクト用 devShell の雛形 (nix flake init -t ~/dotnix#rust)
+├── templates/                # プロジェクト用 devShell の雛形 (rust / go / python / haskell / clojure)
 └── docs/                     # 構成の解説ドキュメント
 ```
 
@@ -69,3 +69,4 @@ rm -rf ~/.config/waybar ~/.config/rofi ~/.config/wlogout ~/.config/hypr
 - [architecture.md](docs/architecture.md): 構成の全体像・hydenix との役割分担・指紋認証の設計・既知の制約
 - [new-machine.md](docs/new-machine.md): 新しいマシンに同じ環境を作る手順
 - [neovim.md](docs/neovim.md): Neovim の運用方針 (Mason なし・devShell・Rust・Herdr)
+- [astronvim-v6-migration.md](docs/astronvim-v6-migration.md): AstroNvim v6 移行の内容と実機での確認手順
