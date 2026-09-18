@@ -40,7 +40,6 @@ in {
     # --- Neovim から使う汎用ツール ---
     lazygit # Git TUI
     wl-clipboard # クリップボード連携
-    nodejs # 一部プラグインと LSP の実行環境
     gdu # ディスク使用量表示
 
     # --- 常時使う LSP・フォーマッタ (旧 Mason 管理分) ---
