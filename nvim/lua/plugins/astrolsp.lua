@@ -18,12 +18,10 @@ return {
     -- 保存時フォーマットは conform.nvim に任せる (plugins/conform.lua)。
     -- ここを既定の true のままにすると LSP と conform で二重にフォーマットが走る
     formatting = { format_on_save = false },
-    -- Mason を使わず、PATH 上のバイナリで起動する LSP サーバー一覧
-    -- (常用のものは Nix の home.packages で、言語ツールチェーンは各プロジェクトの devShell で導入する)
-    -- NOTE: rust_analyzer をここに書いてはいけない。Rust は rustaceanvim が LSP を
-    --       管理しており、二重に起動すると補完や診断が壊れる
-    -- PATH にバイナリが無いサーバーは起動されずに黙って飛ばされるので、
-    -- devShell でしか入らないものをここに並べても副作用はない
+    -- Mason を使わず、PATH 上のバイナリで起動する LSP サーバー
+    -- 常用のものは Nix の home.packages で、言語ツールチェーンは各プロジェクトの devShell で導入する
+    -- NOTE: rust_analyzer をここに書いてはいけない。Rust は rustaceanvim が LSP を管理しており、二重に起動すると補完や診断が壊れる
+    -- PATH にバイナリが無いサーバーは起動されずに黙って飛ばされるので、devShellでしか入らないものをここに並べても副作用はない
     servers = {
       "lua_ls",       -- Lua (この設定ファイル自身の編集用)
       "nil_ls",       -- Nix
@@ -35,8 +33,6 @@ return {
     -- 言語サーバーがアタッチしたバッファに設定する autocmd
     autocmds = {
       -- カーソルを止めたときに診断をフロートで出す
-      -- (cond は付けない。publishDiagnostics は server_capabilities に現れないため
-      --  Client:supports_method が常に true を返し、条件として機能しない)
       lsp_document_diagnostics = {
         {
           event = { "CursorHold" },

@@ -51,7 +51,7 @@ main ブランチの `install_dir` 既定値は `stdpath("data")/site` で、Nix
 
 ```bash
 cd ~/dotnix
-nixos-rebuild switch --flake .    # nh を使っているなら nh os switch
+nh os switch .
 ```
 
 1. `nvim --version` が 0.11 以上であること (0.12 系を想定している)

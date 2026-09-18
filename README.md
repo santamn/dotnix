@@ -1,10 +1,8 @@
 # dotnix
 
-NixOS + Home Manager によるOS環境設定。デスクトップ (Hyprland + HyDE) は自分のフォーク
-[santamn/hydenix](https://github.com/santamn/hydenix) ([florianvazelle/hydenix](https://github.com/florianvazelle/hydenix) 経由の [richen604/hydenix](https://github.com/richen604/hydenix) フォーク) に依存し、
-多ホスト構成・指紋認証・Neovim・シェルなど個人の資産は dotnix 側で管理する構成 (詳細は [architecture.md](docs/architecture.md))。
+NixOS + Home Manager によるOS環境設定。ベースのデスクトップ環境 (Hyprland + HyDE) としては [hydenix の自分用のフォーク](https://github.com/santamn/hydenix)を使い、個人用設定はこの dotnix で管理する構成。
 
-- デスクトップ: hydenix (Hyprland / waybar / rofi / wlogout / hyprlock / hypridle、テーマは "Decay Green")
+- デスクトップ: hydenix (Hyprland / waybar / rofi / wlogout / hyprlock / hypridle)
 - エディタ: Neovim (AstroNvim)
 - シェル: nushell (ログインシェルの zsh から自動起動)
 
@@ -13,36 +11,22 @@ NixOS + Home Manager によるOS環境設定。デスクトップ (Hyprland + Hy
 このリポジトリを NixOS マシンの `~/dotnix` に置いて次を実行:
 
 ```bash
-nixos-rebuild switch --sudo --flake ~/dotnix
+nh os switch
 ```
 
-ホスト名 (`thinkpad-x13-gen6` など) と同名の設定が自動で選択される。
+flake のパスは `programs.nh.flake` (= `dotfiles.path`) 経由で `NH_FLAKE` に入っているので引数は要らない。ホスト名 (`thinkpad-x13-gen6` など) と同名の設定が自動で選択される。
 
-> **NOTE**: `sudo nixos-rebuild switch` ではなく `nixos-rebuild switch --sudo` を使うこと。
-> 前者は flake の評価まで root で走るため、作業ツリーが dirty なとき nix が `.git/objects` に root 所有のオブジェクトを書き込み、以後ユーザ権限の `git` / `nix flake update` が `insufficient permission for adding an object to repository database` で失敗するようになる。
-> `--sudo` (新しめの版では `--elevate=sudo`) なら評価は自分のユーザで行われ、権限が要る activation だけが sudo 経由になる。
+> [!NOTE]
+> `sudo nh os switch` としてはいけない。
+> そのまま起動すれば評価とビルドは自分のユーザで走り、activation とシステムプロファイルの更新だけが昇格する (昇格プログラムは doas → sudo → run0 → pkexec の順に PATH から自動検出。この構成では sudo)
 
 ## 更新 (flake inputs のアップデート)
 
 ```bash
-cd ~/dotnix
-nix flake update
-nixos-rebuild switch --sudo --flake .
+nh os switch --update
 ```
 
-## hydenix ベース構成への移行 (初回のみ)
-
-素の NixOS + Home Manager + stylix で HyDE を手作業再現していた期間の残骸が
-ホームディレクトリに残っている場合、初回 rebuild 前に消しておくと安全:
-
-```bash
-rm -rf ~/.config/hyde ~/.local/share/hyde ~/.cache/hyde
-rm -rf ~/.config/waybar ~/.config/rofi ~/.config/wlogout ~/.config/hypr
-```
-
-1. `nix flake update` を実行して flake.lock を新しい inputs (hydenix 経由) で作り直す
-2. `nixos-rebuild switch --sudo --flake ~/dotnix` を実行する
-3. うまく当たらないテーマ・レイアウトがあれば `rm -rf ~/.config/hyde ~/.local/share/hyde ~/.cache/hyde` の後に再度 switch する ([architecture.md](docs/architecture.md) の「既知の制約・落とし穴」参照)
+`--update` (`-u`) は flake inputs を全部更新してから切り替える。特定の input だけなら `--update-input some_input` (`-U`)。
 
 ## ディレクトリ構成
 
@@ -63,10 +47,3 @@ rm -rf ~/.config/waybar ~/.config/rofi ~/.config/wlogout ~/.config/hypr
 ├── templates/                # プロジェクト用 devShell の雛形 (rust / go / python / haskell / clojure)
 └── docs/                     # 構成の解説ドキュメント
 ```
-
-## ドキュメント
-
-- [architecture.md](docs/architecture.md): 構成の全体像・hydenix との役割分担・指紋認証の設計・既知の制約
-- [new-machine.md](docs/new-machine.md): 新しいマシンに同じ環境を作る手順
-- [neovim.md](docs/neovim.md): Neovim の運用方針 (Mason なし・devShell・Rust・Herdr)
-- [astronvim-v6-migration.md](docs/astronvim-v6-migration.md): AstroNvim v6 移行の内容と実機での確認手順

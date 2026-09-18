@@ -10,19 +10,19 @@
 
 ```bash
 nix-shell -p git
-git clone https://github.com/<あなたのリポジトリ>/dotnix.git ~/dotnix
+git clone https://github.com/santamn/dotnix.git ~/dotnix
 cd ~/dotnix
 ```
 
-> **NOTE**: Neovim 設定のシンボリックリンクなどが `~/dotnix` を前提にしているため、置き場所は `~/dotnix` にすること。別の場所に置きたい場合は `hosts/<ホスト名>/default.nix` に `home-manager.users.<ユーザ名>.dotfiles.path = "/path/to/dotnix";` を書いて既定値を上書きせよ ([modules/home/dotfiles.nix](../modules/home/dotfiles.nix))。
+> [!NOTE]
+> Neovim 設定のシンボリックリンクや `nh` の既定 flake が `~/dotnix` を前提にしているため、置き場所は `~/dotnix` にすること。別の場所に置きたい場合は `hosts/<ホスト名>/default.nix` に `home-manager.users.<ユーザ名>.dotfiles.path = "/path/to/dotnix";` を書いて既定値を上書きせよ ([modules/home/dotfiles.nix](../modules/home/dotfiles.nix))。`nh` の `flake` もこの値を見ているので、上書きすれば `nh os switch` の対象も一緒に切り替わる。
 
 ## 3. ホスト用ディレクトリを作る
 
 ```bash
-HOST=my-new-machine   # 好きなホスト名
+HOST=my-new-machine                                   # 好きなホスト名を設定
 mkdir hosts/$HOST
-# インストーラが生成したハードウェア構成をコピー
-cp /etc/nixos/hardware-configuration.nix hosts/$HOST/
+cp /etc/nixos/hardware-configuration.nix hosts/$HOST/ # インストーラが生成したハードウェア構成をコピー
 ```
 
 `hosts/$HOST/default.nix` を作成する。[hosts/thinkpad-x13-gen6/default.nix](../hosts/thinkpad-x13-gen6/default.nix) を雛形に、そのマシンに合わせて書き換える:
@@ -55,13 +55,20 @@ nixosConfigurations = {
 
 ## 5. 適用する
 
+初回だけは `nh` が存在しないため `nixos-rebuild` を使う必要がある:
+
 ```bash
 nixos-rebuild switch --sudo --flake ~/dotnix#my-new-machine
 ```
 
-ホスト名が flake の設定名と一致していれば、次回からは `--flake ~/dotnix` だけでよい(`mkHost` が `networking.hostName` を設定するので、初回適用後は一致する)。
+> [!NOTE]
+> `sudo nixos-rebuild` と書くと flake の評価まで root で行われ、ロックの更新が要るときに `~/dotnix/flake.lock` と `.git/index` が root 所有で書かれてユーザ権限での更新が壊れるので `--sudo` (`--elevate=sudo` のエイリアス) を付けてユーザとして起動すること。
 
-> **NOTE**: `sudo nixos-rebuild` と書くと flake の評価まで root で行われ、`~/dotnix/.git` に root 所有のファイルが作られてユーザ権限の git 操作が壊れるので、`--sudo` を付けてユーザとして起動すること (詳細は [README](../README.md#設定の適用))。
+2回目以降は `nh` が使える。flake のパスは `programs.nh.flake` から `NH_FLAKE` に入り、ホスト名が flake の設定名と一致していればホスト名の指定も要らない(`mkHost` が `networking.hostName` を設定するので、初回適用後は一致する):
+
+```bash
+nh os switch
+```
 
 ## 6. 初回セットアップ
 
@@ -73,4 +80,4 @@ fprintd-enroll          # 指紋を登録 (対応ハードウェアの場合)
 - SSH 鍵 (`~/.ssh/github`) の配置
 - ブラウザや Slack などへのログイン
 
-は手作業で行う。
+などは手作業で行う。

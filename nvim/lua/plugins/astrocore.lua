@@ -14,13 +14,21 @@ return {
       large_buf = { size = 1024 * 256, lines = 10000 },
     },
     -- Neovim の Tree-sitter 機能 (ハイライト・インデント・textobjects) の設定。
-    -- パーサは Nix が供給するため、実行時のダウンロードとコンパイルは行わない
+    -- パーサとクエリは Nix が供給するため、実行時のダウンロードとコンパイルは行わない
     treesitter = {
       auto_install = false,
     },
     options = {
       opt = {
         spell = true, -- スペルチェックを有効化
+      },
+    },
+    mappings = {
+      n = {
+        -- 既定の update_packages() は lazy の後に treesitter.update() まで走らせる。
+        -- パーサは Nix 管理で site/parser-info に revision が無いため全言語が「要更新」と判定され、
+        -- tree-sitter CLI も無いので約300言語分のエラーが出るだけになる。プラグイン更新だけに絞る
+        ["<Leader>pa"] = { "<Cmd>Lazy sync<CR>", desc = "Update Plugins" },
       },
     },
   },
