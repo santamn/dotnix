@@ -14,10 +14,14 @@ return {
   "stevearc/conform.nvim",
   event = "BufWritePre", -- ファイル保存時にロード
   opts = {
+    -- ここに無いファイルタイプは lsp_format = "fallback" で LSP の整形に落ちる。
+    -- Haskell (HLS) と Clojure (clojure-lsp) は LSP 側が整形できるので書かない
     formatters_by_ft = {
       lua = { "stylua" },
       nix = { "alejandra" },
       rust = { "rustfmt" },
+      go = { "goimports" }, -- gofmt の整形に import の整理を足したもの
+      python = { "ruff_organize_imports", "ruff_format" },
     },
     format_on_save = {
       -- タイムアウトを少し長めに設定 (Nix 環境での初回起動時などを考慮)

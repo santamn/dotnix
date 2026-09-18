@@ -54,6 +54,22 @@
         path = ./templates/rust;
         description = "Rust 開発環境 (rust-analyzer / clippy / codelldb)";
       };
+      go = {
+        path = ./templates/go;
+        description = "Go 開発環境 (gopls / goimports / golangci-lint / delve)";
+      };
+      python = {
+        path = ./templates/python;
+        description = "Python 開発環境 (uv / basedpyright / ruff)";
+      };
+      haskell = {
+        path = ./templates/haskell;
+        description = "Haskell 開発環境 (GHC / cabal / HLS / hlint / ormolu)";
+      };
+      clojure = {
+        path = ./templates/clojure;
+        description = "Clojure 開発環境 (clojure-lsp / clj-kondo / babashka)";
+      };
     };
   };
 }

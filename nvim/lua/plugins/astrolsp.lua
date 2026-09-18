@@ -22,10 +22,15 @@ return {
     -- (常用のものは Nix の home.packages で、言語ツールチェーンは各プロジェクトの devShell で導入する)
     -- NOTE: rust_analyzer をここに書いてはいけない。Rust は rustaceanvim が LSP を
     --       管理しており、二重に起動すると補完や診断が壊れる
+    -- PATH にバイナリが無いサーバーは起動されずに黙って飛ばされるので、
+    -- devShell でしか入らないものをここに並べても副作用はない
     servers = {
-      "lua_ls", -- Lua (この設定ファイル自身の編集用)
-      "nil_ls", -- Nix
-      "gopls",  -- Go (devShell からバイナリを供給)
+      "lua_ls",       -- Lua (この設定ファイル自身の編集用)
+      "nil_ls",       -- Nix
+      "gopls",        -- Go       (templates/go)
+      "basedpyright", -- Python   (templates/python)
+      "hls",          -- Haskell  (templates/haskell)
+      "clojure_lsp",  -- Clojure  (templates/clojure)
     },
     -- 言語サーバーがアタッチしたバッファに設定する autocmd
     autocmds = {
