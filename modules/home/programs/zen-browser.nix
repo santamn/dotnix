@@ -1,33 +1,33 @@
 {
   pkgs,
+  lib,
   inputs,
-  config,
   ...
 }: let
-  # Home Manager が管理する Firefox プロファイルの置き場所
-  # 旧来の ~/.mozilla/firefox ではなく XDG 準拠の位置に置く
-  firefoxConfigPath = "${config.xdg.configHome}/mozilla/firefox";
+  # GitHub Releases の xpi ファイルを取得して Firefox にアドオンとして導入する関数
+  githubXpiAddon = name: release: namePattern: let
+    asset =
+      lib.findFirst (a: builtins.match namePattern a.name != null)
+      (throw "${name}: ${namePattern} に一致するアセットが見つかりませんでした")
+      (builtins.fromJSON (builtins.readFile release)).assets;
+
+    xpi = pkgs.fetchurl {
+      url = asset.browser_download_url;
+      sha256 = lib.removePrefix "sha256:" asset.digest;
+    };
+  in
+    pkgs.runCommand "firefox-addon-${name}" {
+      nativeBuildInputs = [pkgs.unzip pkgs.jq];
+    } ''
+      id=$(unzip -p ${xpi} manifest.json | jq -er '.browser_specific_settings.gecko.id')
+      install -Dm644 ${xpi} \
+        "$out/share/mozilla/extensions/{ec8030f7-c20a-464f-9b0e-13a3a9e97384}/$id.xpi"
+    '';
 in {
-  # Zen Browser は既定で ~/.zen を使うが、プロファイルの中身は Home Manager が
-  # firefoxConfigPath で管理する。~/.zen/profiles.ini からそこを指させる
-  home.file.".zen/profiles.ini".text = ''
-    [Profile0]
-    Name=default
-    IsRelative=0
-    Path=${firefoxConfigPath}/default
-    Default=1
-
-    [General]
-    StartWithLastProfile=1
-    Version=2
-  '';
-
   programs.firefox = {
     enable = true;
     package = inputs.zen-browser.packages."${pkgs.stdenv.hostPlatform.system}".default;
-
-    # プロファイルの置き場所 (既定値は stateVersion 依存で変わるため明示する)
-    configPath = firefoxConfigPath;
+    configPath = ".zen";
 
     profiles.default = {
       id = 0;
@@ -41,18 +41,21 @@ in {
       };
 
       # Extensions (Firefox Add-ons)
-      extensions.packages = with pkgs.firefoxAddons; [
-        ublock-origin
-        darkreader
-        hide-youtube-shorts
-        enhancer-for-youtube
-        control-panel-for-twitter
-        ublacklist
-        plamo-translate
-        foxscroller
-        leechblock-ng
-        uaswitcher
-      ];
+      extensions.packages =
+        (with pkgs.firefoxAddons; [
+          ublock-origin
+          darkreader
+          control-panel-for-youtube
+          control-panel-for-twitter
+          ublacklist
+          plamo-translate
+          foxscroller
+          leechblock-ng
+          uaswitcher
+        ])
+        ++ [
+          (githubXpiAddon "widevine-proxy2" inputs.widevine-proxy2-release "^WidevineProxy2-([0-9]+\\.)+xpi$")
+        ];
 
       settings = {
         # Localization

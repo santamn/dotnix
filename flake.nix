@@ -24,6 +24,11 @@
       url = "github:osipog/nix-firefox-addons";
       inputs.nixpkgs.follows = "nixpkgs";
     };
+
+    widevine-proxy2-release = {
+      url = "file+https://api.github.com/repos/DevLARLEY/WidevineProxy2/releases/latest";
+      flake = false;
+    };
   };
 
   outputs = {nixpkgs, ...} @ inputs: let
