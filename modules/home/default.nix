@@ -4,6 +4,7 @@
     ./dotfiles.nix
     ./packages.nix
 
+    ./programs/ai-agents.nix
     ./programs/direnv.nix
     ./programs/fcitx5.nix
     ./programs/ghostty.nix
