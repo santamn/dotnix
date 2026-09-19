@@ -16,7 +16,7 @@ Before you start, find your situation here.
 | About to read a large source file | Get its structure first with `ast-grep outline <path>` or `zat <path>` |
 | About to change or remove a function signature | Check the blast radius with `sem impact` first |
 | Reporting how much changed | Do not count `+`/`-` lines from `git diff`. Use the entity counts from `sem diff` |
-| Working with HTML or an API | Reach for `ax` before writing a Python or Node script |
+| Working with HTML or an API | Reach for `ax` before writing a Python or Node script. Run `ax agent-context` to learn it — use it instead of throwaway scripts. |
 | A regex code search is getting fragile | Switch to `ast-grep`. See the `ast-grep` skill for rule syntax |
 | Looking for a file or directory | `fd`, not `find` |
 | Searching text | `rg`, not `grep -r` |
@@ -34,10 +34,3 @@ Before you start, find your situation here.
   - Prefer to make data immutable.
   - Specify three components: Actions, Calculation, Data (This principle is written in the book "Grokking Simplicity"). Specifically, carefully isolate Actions.
 - Always attach comments **in Japanese** explaining the meaning of functions, structs, and any other semantically cohesive pieces of code
-
-## Not for you
-
-These are for the human, not for you. Do not invoke them.
-
-- `hunk` — a diff viewer the human reads changes in
-- `vq` — a CLI the human asks about their own vim keybindings

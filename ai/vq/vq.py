@@ -1,9 +1,6 @@
 #!/usr/bin/env python3
-"""自分の vim 設定を踏まえてコマンドを提案する CLI。
-
-エージェントのハーネスを経由すると、起動とツール定義のロードと発火判定の
-固定コストが推論時間を上回る。このタスクはファイル探索も編集も要らないので、
-単発の API コールだけを投げる。
+"""
+自分の vim の設定を踏まえてコマンドを提案する CLI
 """
 
 from __future__ import annotations
@@ -23,31 +20,32 @@ SUMMARY_PATH = Path(__file__).with_name("config-summary.md")
 
 
 def _cache_dir() -> Path:
-    """キャッシュとログの置き場所。XDG に従う。"""
+    """
+    キャッシュとログの置き場所。XDG に従う。
+    """
     base = os.environ.get("XDG_CACHE_HOME") or os.path.expanduser("~/.cache")
     return Path(base) / "vq"
 
 
 def _key_path() -> Path:
-    """鍵ファイルの場所。リポジトリの外に置く。"""
+    """
+    鍵ファイルの場所
+    """
     base = os.environ.get("XDG_CONFIG_HOME") or os.path.expanduser("~/.config")
     return Path(base) / "vq" / "api-key"
 
 
 def normalize(query: str) -> str:
-    """キャッシュキー用にクエリを正規化する。
-
-    NFKC で全角半角を揃え、前後と連続の空白を潰し、小文字に寄せる。
+    """
+    キャッシュキー用にクエリを正規化する
     """
     text = unicodedata.normalize("NFKC", query).strip().lower()
     return re.sub(r"\s+", " ", text)
 
 
 def load_api_key(env: dict[str, str], read_file) -> str | None:
-    """API キーを環境変数、無ければ設定ファイルから読む。
-
-    リポジトリには鍵を置かないので、どちらもリポジトリ外を見る。
-    read_file を引数に取るのは、テストで実ファイルを触らずに済ませるため。
+    """
+    API キーを環境変数か、無ければ設定ファイルから読む
     """
     key = env.get("ANTHROPIC_API_KEY", "").strip()
     if key:
@@ -59,8 +57,11 @@ def load_api_key(env: dict[str, str], read_file) -> str | None:
 
 
 def build_system(summary: str) -> str:
-    """system prompt を組み立てる。出力形式を厳しく固定して出力トークンを抑える。"""
-    return f"""あなたはvimコマンドの提案器です。ユーザーの設定は以下の通り。
+    """
+    system prompt を組み立てる
+    """
+    return f"""
+あなたはvimコマンドの提案器です。ユーザーの設定は以下の通り。
 
 {summary}
 
@@ -71,12 +72,13 @@ def build_system(summary: str) -> str:
 <構成要素>: <役割の説明>
 <構成要素>: <役割の説明>
 
-説明は各行40字以内。ユーザー独自のマッピングを使った場合は
-その旨を明示する。標準機能で足りる場合は独自マッピングを使わない。"""
+説明は各行40字以内。ユーザー独自のマッピングを使った場合はその旨を明示する。標準機能で足りる場合は独自マッピングを使わない。
+"""
 
 
 def ask(query: str, cache: dict[str, str], send) -> tuple[str, bool]:
-    """クエリに答える。キャッシュにあればそれを返し、無ければ send で取りに行く。
+    """
+    クエリに答える。キャッシュにあればそれを返し、無ければ send で取りに行く。
 
     send はトークンのイテレータを返す呼び出し可能オブジェクト。
     ストリーミングをそのまま標準出力へ流すため、呼び出し側が差し替えられるようにしてある。
@@ -95,7 +97,9 @@ def ask(query: str, cache: dict[str, str], send) -> tuple[str, bool]:
 
 
 def _load_cache() -> dict[str, str]:
-    """ローカルのキャッシュを読む。壊れていたら捨てて作り直す。"""
+    """
+    ローカルのキャッシュを読む。壊れていたら捨てて作り直す。
+    """
     path = _cache_dir() / "cache.json"
     try:
         return json.loads(path.read_text(encoding="utf-8"))
@@ -104,7 +108,9 @@ def _load_cache() -> dict[str, str]:
 
 
 def _save_cache(cache: dict[str, str]) -> None:
-    """キャッシュを書き戻す。"""
+    """
+    キャッシュを書き戻す
+    """
     directory = _cache_dir()
     directory.mkdir(parents=True, exist_ok=True)
     (directory / "cache.json").write_text(
@@ -113,7 +119,9 @@ def _save_cache(cache: dict[str, str]) -> None:
 
 
 def _log(query: str, answer: str, cached: bool) -> None:
-    """質問と回答を追記する。何を繰り返し忘れているかを後から見るため。"""
+    """
+    質問と回答を追記する
+    """
     directory = _cache_dir()
     directory.mkdir(parents=True, exist_ok=True)
     row = {"query": query, "answer": answer, "cached": cached}
@@ -122,7 +130,9 @@ def _log(query: str, answer: str, cached: bool) -> None:
 
 
 def main() -> int:
-    """CLI 入口。"""
+    """
+    CLIの入口
+    """
     query = " ".join(sys.argv[1:]).strip()
     if not query:
         print("usage: vq <聞きたい操作>", file=sys.stderr)
@@ -141,7 +151,9 @@ def main() -> int:
     system = build_system(SUMMARY_PATH.read_text(encoding="utf-8"))
 
     def send(text: str):
-        """API をストリーミングで叩く。最初のトークンが出た時点で読み始められる。"""
+        """
+        API をストリーミングで叩く。最初のトークンが出た時点で読み始められる。
+        """
         with client.messages.stream(
             model=MODEL,
             max_tokens=MAX_TOKENS,
