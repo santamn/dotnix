@@ -29,6 +29,53 @@
       url = "file+https://api.github.com/repos/DevLARLEY/WidevineProxy2/releases/latest";
       flake = false;
     };
+
+    # --- AI エージェント用の skill とプラグイン ---
+    # どれも Nix のビルドは不要でファイルを配るだけなので flake = false
+    superpowers = {
+      url = "github:obra/superpowers";
+      flake = false;
+    };
+    ponytail = {
+      url = "github:DietrichGebert/ponytail";
+      flake = false;
+    };
+    humanizer = {
+      url = "github:blader/humanizer";
+      flake = false;
+    };
+    claude-plugins-official = {
+      url = "github:anthropics/claude-plugins-official";
+      flake = false;
+    };
+    trailofbits-skills = {
+      url = "github:trailofbits/skills";
+      flake = false;
+    };
+    rust-guidelines = {
+      url = "github:microsoft/rust-guidelines";
+      flake = false;
+    };
+    stop-ai-slop-jp = {
+      url = "github:iKora128/stop-ai-slop-jp";
+      flake = false;
+    };
+    ast-grep-skill = {
+      url = "github:ast-grep/agent-skill";
+      flake = false;
+    };
+
+    # --- AI エージェント用の CLI (上流が flake を持つ) ---
+    # ax は nixpkgs に無い
+    ax = {
+      url = "github:yusukebe/ax";
+      inputs.nixpkgs.follows = "nixpkgs";
+    };
+    # nixpkgs の sem は semaphoreci/cli で別物なので上流を使う
+    sem = {
+      url = "github:ataraxy-labs/sem";
+      inputs.nixpkgs.follows = "nixpkgs";
+    };
   };
 
   outputs = {nixpkgs, ...} @ inputs: let
