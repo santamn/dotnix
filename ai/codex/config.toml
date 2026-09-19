@@ -1,0 +1,3 @@
+# Codex の hook を有効化する。既定では無効
+[features]
+codex_hooks = true

@@ -1,0 +1,64 @@
+{
+  "model": "opus",
+  "theme": "dark",
+  "effortLevel": "high",
+  "modelSettings": {
+    "claude-opus-5": {
+      "effortLevel": "xhigh"
+    }
+  },
+  "hooks": {
+    "PostToolUse": [
+      {
+        "matcher": "Write|Edit",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "$HOME/.agents/hooks/lint-md.sh",
+            "timeout": 30
+          }
+        ]
+      }
+    ],
+    "SessionStart": [
+      {
+        "matcher": "startup|clear|compact",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "\"$HOME/.agents/plugins/superpowers/hooks/run-hook.cmd\" session-start",
+            "shell": "bash",
+            "async": false
+          },
+          {
+            "type": "command",
+            "command": "CLAUDE_PLUGIN_ROOT=\"$HOME/.agents/plugins/ponytail\" node \"$HOME/.agents/plugins/ponytail/hooks/ponytail-activate.js\"",
+            "timeout": 5
+          }
+        ]
+      }
+    ],
+    "SubagentStart": [
+      {
+        "hooks": [
+          {
+            "type": "command",
+            "command": "CLAUDE_PLUGIN_ROOT=\"$HOME/.agents/plugins/ponytail\" node \"$HOME/.agents/plugins/ponytail/hooks/ponytail-subagent.js\"",
+            "timeout": 5
+          }
+        ]
+      }
+    ],
+    "UserPromptSubmit": [
+      {
+        "hooks": [
+          {
+            "type": "command",
+            "command": "CLAUDE_PLUGIN_ROOT=\"$HOME/.agents/plugins/ponytail\" node \"$HOME/.agents/plugins/ponytail/hooks/ponytail-mode-tracker.js\"",
+            "timeout": 5
+          }
+        ]
+      }
+    ]
+  }
+}
