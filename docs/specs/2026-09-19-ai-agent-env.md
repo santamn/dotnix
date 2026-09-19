@@ -119,10 +119,11 @@ textlint のプリセット構成は次の3つとする。
 
 | skill | 出所 | 備考 |
 | --- | --- | --- |
-| `japanese-writing` | 新規 | 後述 |
+| `japanese-writing` | 新規 | ジャンルの振り分け役。後述 |
 | `ast-grep` | ast-grep/agent-skill | 既存。flake input で pin |
 | `sem` | ataraxy-labs/sem | 既存。`llms.txt` を SKILL.md として置く |
-| `stop-ai-slop-jp` | iKora128/stop-ai-slop-jp | 既存。`japanese-writing` から参照する |
+| `stop-ai-slop-jp` | iKora128/stop-ai-slop-jp | 文章規範。個人の文章にだけ当てる |
+| `japanese-tech-writing`, `cognitive-rhythm-writing` | k16shikano の gist | 文章規範。上流が兄弟配置を前提にしている |
 | `hunk-review`, `hunk-extensions` | `pkgs.hunk` 同梱 | store path から張る |
 | `use-modern-go` | JetBrains/go-modern-guidelines | CLI `go-modern-guidelines` を呼ぶ |
 | `modern-python`, `modern-cpp`, `property-based-testing`, `gh-cli` | trailofbits/skills | plugins/\<name\>/skills/\<name\> を張る |
@@ -261,71 +262,39 @@ DeepSeek のユーザ全体規約は `~/.agents/AGENTS.md` ではない。`dshHo
 
 ## japanese-writing skill
 
-stop-ai-slop-jp と k16shikano の2つの gist を統合する。
+文章規範は3本とも上流そのままを独立した skill として置き、`japanese-writing` はジャンルの判定と振り分けだけを持つ。
 
-### 統合の方針
+### 振り分けにした理由
 
-3つをそのまま混ぜると、README に「毒を残せ」「自虐を入れろ」「中間温度を混ぜろ」と指示することになって逆効果になる。これらは個人のブログには効くが技術文書には有害なので、ジャンルで出し分ける。
+当初は3本を1つの skill へ統合し、`references/` に抜粋を置く設計だった。実装中に2点わかって方針を変えた。
 
-もう一つの軸として、textlint が機械判定できるものは SKILL.md に書かない。偏愛語のリスト、全角ダッシュ、中黒での3項目並列、`**` の残骸は `preset-ai-words-ja` と `preset-ai-writing` が拾う。skill には判断が要るものだけを残す。
+1. `cognitive-rhythm-writing` の SKILL.md は冒頭で `../japanese-tech-writing/SKILL.md` を読むよう指示している。上流はこの2本が skill ディレクトリに兄弟として並ぶ前提で書かれており、抜粋するとこの連携が壊れる
+2. 3本のうち2本は description が既にジャンルで絞られている。`japanese-tech-writing` は「技術書の章、草稿、記事、解説文を書くとき」、`cognitive-rhythm-writing` は「読み物として読ませたい章・記事・解説文」。誤発火の心配は上流が解決済みだった
 
-### 構成
+抜粋には固有の価値がなく、上流が更新されれば腐るだけなので削除した。
 
-```text
-ai/skills/japanese-writing/
-  SKILL.md
-  references/
-    llm-tells.md
-    tech-docs.md
-    long-form.md
-    personal.md
-    examples.md
-```
+### 供給元
 
-SKILL.md の役割はジャンルの判定と、読む reference の指定だけとする。
-
-| ジャンル | 対象 | 読む reference |
+| skill | 上流 | input の形 |
 | --- | --- | --- |
-| 技術文書 | README、docs/、設計書、コードコメント | llm-tells, tech-docs |
-| 読み物 | 記事、書籍原稿、解説 | llm-tells, tech-docs, long-form |
-| 個人の文章 | ブログ、感想 | llm-tells, personal |
-| 短文 | commit message、PR 説明、issue | llm-tells |
+| `japanese-tech-writing` | k16shikano の gist | `git+https://gist.github.com/...` |
+| `cognitive-rhythm-writing` | k16shikano の gist | 同上 |
+| `stop-ai-slop-jp` | iKora128/stop-ai-slop-jp | `github:` |
 
-### 各 reference の中身
+gist は git リポジトリなので、そのまま `flake = false` の input にできる。どちらも `SKILL.md` がリポジトリのルートにある。
 
-`llm-tells.md` は全ジャンル必読。出典は japanese-tech-writing の「LLM っぽい表現の禁止」と「翻訳調の比喩と擬人化の禁止」。
+### japanese-writing が持つもの
 
-- 予告と総括、正面から系、空虚な形容と動詞、接続の型、弱い緩和と称賛
-- 英語慣用句の直訳 (carry, open, expose, live, land)
-- 無生物主語構文の直輸入による擬人化
-- 研究者の話し言葉 (効く、刺さる、筋がいい)
+- ジャンルの判定表と、そのジャンルで読む規範 skill の指定
+- 間違えやすい組み合わせの明示
+- textlint との分担
+- `references/examples.md`: 3出典を横断した AI 版と人間版の対比。ジャンルタグ付き
 
-`tech-docs.md` は japanese-tech-writing から抜く。
+### 残るリスク
 
-- 段落と論証の構成 (パラグラフライティング)
-- 論証の厳密さ (推量を断定に変えない、異なるものを同じとまとめない、因果の機構を書く)
-- 読み手の負荷の管理
-- 冗長の排除
-- 見出しの付け方
-- 読者への誠実さ
+`stop-ai-slop-jp` の description は「AIで書いた日本語を、人間が書いた文章に戻す」と広く、技術文書にも発火する。「毒を許す」「中間温度を混ぜる」を README に当てると読みにくくなる。
 
-`long-form.md` は cognitive-rhythm-writing と、japanese-tech-writing の「演出の抑制」から抜く。
-
-- 文の拍、段落の密度波形、冒頭と節の入り方
-- 未回収の緊張の管理と緊張台帳
-- 緩みと駄文の見分け方 (状況を更新するか、文書を更新するか)
-- 演出の抑制 (溜め、決め台詞、太字、劇的な転回)
-
-`personal.md` は stop-ai-slop-jp から抜く。
-
-- 主体と立場、反証可能な主張
-- 強度を一段下げ中間温度を混ぜる
-- 両論併記を捨て毒を許す
-- 命題型 H2 を避ける、二項対比を直接 Y に変える、ムラを入れる
-
-`examples.md` は3つの出典の悪い例と良い例を、ジャンルのタグを付けて集める。
-
-上流の stop-ai-slop-jp は input として pin したまま残し、`personal.md` から参照する。
+上流の description を書き換えると fork になるので避け、`ai/AGENTS.md` に「日本語は `japanese-writing` から入る。規範 skill を直接掴まない」と明記して防ぐ。AGENTS.md は常に読まれるので、hook より確実である。
 
 ## vq (Vim コマンド提案 CLI)
 

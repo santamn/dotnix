@@ -65,6 +65,14 @@ Claude Code の `~/.claude/plugins/` のキャッシュ構造は内部実装な�
 
 代わりに `/plugin-name:command` という名前空間は失う。衝突したら張る側でリネームする。
 
+## 日本語の文章規範
+
+`japanese-tech-writing`、`cognitive-rhythm-writing`、`stop-ai-slop-jp` の3本を上流そのままの skill として置いてある。`japanese-writing` skill はジャンルを判定してこの3本へ振り分けるだけで、規範そのものは持たない。抜粋を作ると上流の更新から取り残されるためである。
+
+`cognitive-rhythm-writing` は自身の SKILL.md で `../japanese-tech-writing/SKILL.md` を読むよう指示している。この2本は skill ディレクトリに兄弟として並んでいる必要があるので、片方だけを外さないこと。
+
+`stop-ai-slop-jp` は description が広く技術文書にも発火する。毒や中間温度を README に入れることになるので、`ai/AGENTS.md` で `japanese-writing` から入るよう指示してある。
+
 ## 秘密情報
 
 このリポジトリには秘密情報を置かない。管理機構もまだ無い。
