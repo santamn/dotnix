@@ -23,5 +23,15 @@
         };
       });
     })
+
+    # nixpkgs に無い自前パッケージ (定義は pkgs/ にある)
+    (final: _prev: {
+      textlint-rule-preset-ai-words-ja =
+        final.callPackage ../../pkgs/textlint-rule-preset-ai-words-ja.nix {};
+      textlint-rule-preset-ai-writing =
+        final.callPackage ../../pkgs/textlint-rule-preset-ai-writing.nix {};
+      go-modern-guidelines =
+        final.callPackage ../../pkgs/go-modern-guidelines.nix {};
+    })
   ];
 }
