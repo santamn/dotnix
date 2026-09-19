@@ -2,7 +2,6 @@
 {pkgs, ...}: {
   home.packages = with pkgs; [
     # --- CLI tools ---
-    wine64 # Windows アプリケーション互換レイヤー
     fastfetch # システム情報表示
     trash-cli # ゴミ箱操作 CLI
 

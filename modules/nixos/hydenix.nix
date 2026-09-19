@@ -4,7 +4,7 @@
     enable = true;
     # boot.kernelPackages が modules/nixos/boot.nix と二重定義になりビルドが落ちるため無効化
     boot.enable = false;
-    # Steam / lutris / gamescope などは不要
-    gaming.enable = false;
+    # Steam(Proton GE)と lutris と wine staging、gamescope、コントローラ用ドライバ一式
+    gaming.enable = true;
   };
 }
