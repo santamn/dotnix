@@ -32,6 +32,7 @@
         final.callPackage ../../pkgs/textlint-rule-preset-ai-writing.nix {};
       go-modern-guidelines =
         final.callPackage ../../pkgs/go-modern-guidelines.nix {};
+      vq = final.callPackage ../../pkgs/vq.nix {};
     })
   ];
 }

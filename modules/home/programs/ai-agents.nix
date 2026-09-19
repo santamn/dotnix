@@ -156,8 +156,9 @@ in {
     textlint
     pkgs.markdownlint-cli
 
-    # --- 人間用 ---
+    # --- 人間用 (エージェントは使わない) ---
     pkgs.hunk # diff レビュー用 TUI
+    pkgs.vq # vim のコマンドを思い出すための CLI
   ];
 
   # hunk は git の pager を奪うので無効化する。
