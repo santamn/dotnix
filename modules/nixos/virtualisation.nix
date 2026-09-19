@@ -1,8 +1,9 @@
-# コンテナ実行環境 (Docker & Podman)
-{...}: {
-  virtualisation.docker.enable = true;
+# コンテナ実行環境 (Podman)
+{pkgs, ...}: {
+  virtualisation.docker.enable = false;
   virtualisation.podman = {
     enable = true;
-    dockerCompat = false; # docker コマンドは本物の Docker を使う
+    dockerCompat = true;
+    extraPackages = [pkgs.docker-compose];
   };
 }
