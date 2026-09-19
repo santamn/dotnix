@@ -2,6 +2,14 @@
 
 AI 版と人間版の対比。各例にジャンルのタグを付けてある。タグの無いものは全ジャンル共通。
 
+症状から引くための索引であって、規範そのものではない。理由まで知りたければ、タグに対応する規範 skill を読む。
+
+出典:
+
+- [日本語技術文書の文章規範](https://gist.github.com/k16shikano/fd287c3133457c4fd8f5601d34aa817d) — `japanese-tech-writing` skill
+- [認知リズムを生むための日本語ライティング規範](https://gist.github.com/k16shikano/eb2929f13ed19c97188393d297be8432) — `cognitive-rhythm-writing` skill
+- [stop-ai-slop-jp](https://github.com/iKora128/stop-ai-slop-jp) — `stop-ai-slop-jp` skill
+
 ## 空句
 
 **[全ジャンル]** 姿勢の宣言を、中身に置き換える。

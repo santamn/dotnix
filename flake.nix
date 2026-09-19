@@ -60,6 +60,17 @@
       url = "github:iKora128/stop-ai-slop-jp";
       flake = false;
     };
+    # k16shikano の文章規範2本。gist は git リポジトリなのでそのまま input にできる。
+    # cognitive-rhythm-writing の SKILL.md が ../japanese-tech-writing/SKILL.md を読むので、
+    # skill ディレクトリに兄弟として並べる必要がある
+    japanese-tech-writing = {
+      url = "git+https://gist.github.com/k16shikano/fd287c3133457c4fd8f5601d34aa817d.git";
+      flake = false;
+    };
+    cognitive-rhythm-writing = {
+      url = "git+https://gist.github.com/k16shikano/eb2929f13ed19c97188393d297be8432.git";
+      flake = false;
+    };
     ast-grep-skill = {
       url = "github:ast-grep/agent-skill";
       flake = false;

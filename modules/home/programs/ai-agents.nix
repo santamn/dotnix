@@ -62,7 +62,13 @@
   # 外部から持ってくる skill: 名前 -> ディレクトリ
   externalSkills =
     {
+      # 日本語の文章規範3本。japanese-writing skill がジャンルで振り分ける。
+      # cognitive-rhythm-writing は ../japanese-tech-writing/SKILL.md を読むので、
+      # この2つは兄弟として並んでいる必要がある
       stop-ai-slop-jp = "${inputs.stop-ai-slop-jp}";
+      japanese-tech-writing = "${inputs.japanese-tech-writing}";
+      cognitive-rhythm-writing = "${inputs.cognitive-rhythm-writing}";
+
       ast-grep = "${inputs.ast-grep-skill}/ast-grep/skills/ast-grep";
       hunk-review = "${pkgs.hunk}/share/skills/hunk/hunk-review";
       hunk-extensions = "${pkgs.hunk}/share/skills/hunk/hunk-extensions";

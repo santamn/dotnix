@@ -8,7 +8,7 @@ Before you start, find your situation here.
 
 | Situation | Do this |
 | --- | --- |
-| Writing or editing Japanese prose | Use the `japanese-writing` skill. Decide the genre first: it changes which rules apply |
+| Writing or editing Japanese prose | Start from the `japanese-writing` skill. It routes you to the right style guide for the genre. Never reach for a style guide directly |
 | You wrote or edited a `.md` file | Run `~/.agents/hooks/lint-md.sh <file>` and fix what it reports |
 | Writing Go | Use the `use-modern-go` skill. It detects the project's Go version through the `go-modern-guidelines` CLI |
 | Writing Python | Read the `modern-python` skill |
@@ -24,7 +24,7 @@ Before you start, find your situation here.
 ## Writing
 
 - Do not hard wrap prose. Insert line breaks only between paragraphs — never mid-paragraph to constrain visual line width. Let the display handle soft wrapping.
-- When writing Japanese, follow the `japanese-writing` skill. Technical documentation and personal writing take different rules, so settle the genre before you write.
+- When writing Japanese, enter through the `japanese-writing` skill and let it pick the style guide. `japanese-tech-writing`, `cognitive-rhythm-writing` and `stop-ai-slop-jp` each assume a genre, and applying one to the wrong genre makes the text worse. In particular, `stop-ai-slop-jp` asks for bite, self-deprecation and lukewarm verdicts, which belong in personal writing and ruin a README.
 - Fix every lint finding without changing what the document says. Do not delete content to satisfy the linter.
 
 ## Coding
