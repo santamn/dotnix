@@ -2,7 +2,7 @@
 
 ## Project Overview
 
-A personal environment configuration repository built on NixOS + Home Manager. The desktop layer (Hyprland/HyDE) is provided by a personal fork of hydenix (`github:santamn/hydenix`, input `hydenix`); this repo owns the multi-host setup, fingerprint auth, shell/editor/terminal choices, and everything hydenix doesn't provide (see [architecture.md](docs/architecture.md) for the history and the full division of responsibility).
+A personal environment configuration repository built on NixOS + Home Manager. The desktop layer (Hyprland/HyDE) is provided by a personal fork of hydenix (`github:santamn/hydenix`, input `hydenix`); this repo owns the multi-host setup, fingerprint auth, shell/editor/terminal choices, and everything hydenix doesn't provide.
 
 ### Directory Structure
 
@@ -16,6 +16,5 @@ A personal environment configuration repository built on NixOS + Home Manager. T
 
 ### Conventions
 
-- Coloring/theming for the desktop is owned by hydenix (`hydenix.hm.theme`, wallbash). Don't reintroduce stylix or hand-roll desktop-layer configs that hydenix already provides — check `docs/architecture.md`'s division-of-responsibility table before adding to `modules/nixos/` or `modules/home/` for anything Hyprland/waybar/rofi/theme-related
 - Put machine-specific values (e.g. battery thresholds) under `hosts/`; everything else goes under `modules/`
 - This project is sometimes edited on machines that aren't running NixOS. In that case, don't run verification such as `nix flake check` on the editing machine — ask the user to run it on a NixOS machine instead

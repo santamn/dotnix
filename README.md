@@ -18,7 +18,7 @@ flake のパスは `programs.nh.flake` (= `dotfiles.path`) 経由で `NH_FLAKE` 
 
 > [!NOTE]
 > `sudo nh os switch` としてはいけない。
-> そのまま起動すれば評価とビルドは自分のユーザで走り、activation とシステムプロファイルの更新だけが昇格する (昇格プログラムは doas → sudo → run0 → pkexec の順に PATH から自動検出。この構成では sudo)
+> `sudo` なしでコマンドを実行しておけば、評価とビルドは自分のユーザー権限で、activation とシステムプロファイルの更新は権限昇格して実行される (昇格コマンドは doas → sudo → run0 → pkexec の順に PATH から自動検出される) 。
 
 ## 更新 (flake inputs のアップデート)
 
@@ -26,24 +26,30 @@ flake のパスは `programs.nh.flake` (= `dotfiles.path`) 経由で `NH_FLAKE` 
 nh os switch --update
 ```
 
-`--update` (`-u`) は flake inputs を全部更新してから切り替える。特定の input だけなら `--update-input some_input` (`-U`)。
+`--update` (`-u`) は flake inputs を全部更新してから切り替える。特定の input だけなら `--update-input some_input` (`-U`) 。
+
+## テンプレートの利用
+
+```bash
+nix flake init -t ~/dotnix#template
+```
 
 ## ディレクトリ構成
 
 ```text
 .
-├── flake.nix                 # エントリポイント (inputs とホスト一覧、hydenix を依存に追加)
+├── flake.nix                 # エントリポイント 
 ├── hosts/                    # ホスト (マシン) ごとの設定
 │   └── thinkpad-x13-gen6/
 │       ├── default.nix       # ホスト固有設定 (nixos-hardware, バッテリー閾値など)
 │       └── hardware-configuration.nix
 ├── modules/
 │   ├── nixos/                # 全ホスト共通のシステム設定 (boot, audio, network, 指紋認証, nh ...)
-│   └── home/                 # ユーザ環境 (Home Manager) の設定 (Hyprland/waybar/rofi 等は hydenix が提供)
-│       └── programs/         # 個別アプリ (neovim, ghostty, nushell, zen-browser ...)
+│   └── home/                 # ユーザー環境 (Home Manager) の設定
+│       └── programs/         # 個別アプリの設定 (neovim, ghostty, nushell, zen-browser ...)
 ├── home/
-│   └── santamn.nix           # ユーザごとの Home Manager エントリポイント + hydenix.hm オプション
-├── nvim/                     # Neovim の Lua 設定 (~/.config/nvim にシンボリックリンクされる)
-├── templates/                # プロジェクト用 devShell の雛形 (rust / go / python / haskell / clojure)
+│   └── santamn.nix           # ユーザーごとの Home Manager エントリポイント + hydenix.hm オプション
+├── nvim/                     # Neovim の Lua 設定 (~/.config/nvim にハードリンクされる)
+├── templates/                # プロジェクト用 devShell の雛形
 └── docs/                     # 構成の解説ドキュメント
 ```
