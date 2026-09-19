@@ -9,8 +9,7 @@ Microsoft の [Pragmatic Rust Guidelines](https://microsoft.github.io/rust-guide
 
 ## 読み方
 
-全部で 135KB ある。**全部は読まない。** 下の表から該当するカテゴリを1つか2つ選び、
-`references/<category>/` の中の `M-*.md` だけを読む。各ファイルは1つの指針で完結している。
+全部で 135KB ある。**全部は読まない。** 下の表から該当するカテゴリを1つか2つ選び、`references/<category>/` の中の `M-*.md` だけを読む。各ファイルは1つの指針で完結している。
 
 | カテゴリ | いつ読むか |
 | --- | --- |
@@ -22,8 +21,7 @@ Microsoft の [Pragmatic Rust Guidelines](https://microsoft.github.io/rust-guide
 | `docs` | 公開 API のドキュメントを書くとき |
 | `ai` | エージェントが触る前提で API を設計するとき |
 
-`references/` の実体は上流の `src/guidelines/` なので、上の表にないディレクトリが
-増えていることがある。迷ったら `ls references/` で確認する。
+`references/` の実体は上流の `src/guidelines/` なので、上の表にないディレクトリが増えていることがある。迷ったら `ls references/` で確認する。
 
 ## 指針の引き方
 

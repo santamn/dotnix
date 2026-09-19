@@ -1,12 +1,10 @@
 # AI エージェント環境
 
-Claude Code、Codex、DeepSeek Harness で同じ skill と規約を使うための構成。
-設計の経緯は [specs/2026-09-19-ai-agent-env.md](specs/2026-09-19-ai-agent-env.md) にある。
+Claude Code、Codex、DeepSeek Harness で同じ skill と規約を使うための構成。設計の経緯は [specs/2026-09-19-ai-agent-env.md](specs/2026-09-19-ai-agent-env.md) にある。
 
 ## 構成
 
-`ai/` が唯一の実体で、各エージェントの探索パスからリンクを張っている。
-自作のものは作業ツリーを直接指すので、編集すれば rebuild なしに効く (`nvim/` と同じ方式)。
+`ai/` が唯一の実体で、各エージェントの探索パスからリンクを張っている。自作のものは作業ツリーを直接指すので、編集すれば rebuild なしに効く (`nvim/` と同じ方式)。
 
 ```text
 ai/
@@ -30,14 +28,11 @@ ai/
 | スラッシュコマンド | `~/.claude/commands/` | (skill に変換) | (skill に変換) |
 | hook | `~/.claude/settings.json` | `~/.codex/hooks.json` | ブリッジプラグイン経由 |
 
-Claude Code と Codex は hook のスキーマが同じなので、同じ定義を両方に入れてある。
-DeepSeek は `dsh-hooks-claude-code` と `dsh-hooks-codex` というブリッジを持っていて、
-既存の `hooks.json` をそのまま実行できる。
+Claude Code と Codex は hook のスキーマが同じなので、同じ定義を両方に入れてある。DeepSeek は `dsh-hooks-claude-code` と `dsh-hooks-codex` というブリッジを持っていて、既存の `hooks.json` をそのまま実行できる。
 
 ## skill を足す
 
-自作するなら `ai/skills/<name>/SKILL.md` を作るだけでよい。rebuild すれば
-`~/.agents/skills/` と `~/.claude/skills/` の両方に並ぶ。中身の編集は rebuild が要らない。
+自作するなら `ai/skills/<name>/SKILL.md` を作るだけでよい。rebuild すれば `~/.agents/skills/` と `~/.claude/skills/` の両方に並ぶ。中身の編集は rebuild が要らない。
 
 外部から持ってくるなら2手順。
 
@@ -46,22 +41,15 @@ DeepSeek は `dsh-hooks-claude-code` と `dsh-hooks-codex` というブリッジ
 
 ## プラグインを足す
 
-`modules/home/programs/ai-agents.nix` の `plugins` に1行足す。`skills/` `agents/`
-`commands/` が自動で配られる。`hooks/` だけは `ai/claude/settings.json` と
-`ai/codex/hooks.json` に手で書く。
+`modules/home/programs/ai-agents.nix` の `plugins` に1行足す。`skills/` `agents/` `commands/` が自動で配られる。`hooks/` だけは `ai/claude/settings.json` と `ai/codex/hooks.json` に手で書く。
 
-hook のコマンドでは store path ではなく `$HOME/.agents/plugins/<name>` を指すこと。
-input を更新するたびに設定ファイルを書き換えずに済む。
+hook のコマンドでは store path ではなく `$HOME/.agents/plugins/<name>` を指すこと。input を更新するたびに設定ファイルを書き換えずに済む。
 
-取り込む前に、本文がモデル名やハーネス固有の機能に依存していないか確認する。
-依存しているものは、形式だけ変換しても他エージェントでは動かない
-(公式の `code-review` プラグインを入れていないのはこれが理由)。
+取り込む前に、本文がモデル名やハーネス固有の機能に依存していないか確認する。依存しているものは、形式だけ変換しても他エージェントでは動かない (公式の `code-review` プラグインを入れていないのはこれが理由)。
 
 ## マーケットプレイスは使わない
 
-Claude Code の `~/.claude/plugins/` のキャッシュ構造は内部実装なので Nix で再現すると脆く、
-そもそも Claude Code しか読まない。プラグインの中身は素のファイルなので、種類ごとに
-各エージェントが直接読む場所へ配っている。
+Claude Code の `~/.claude/plugins/` のキャッシュ構造は内部実装なので Nix で再現すると脆く、そもそも Claude Code しか読まない。プラグインの中身は素のファイルなので、種類ごとに各エージェントが直接読む場所へ配っている。
 
 代わりに `/plugin-name:command` という名前空間は失う。衝突したら張る側でリネームする。
 

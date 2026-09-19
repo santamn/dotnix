@@ -1816,8 +1816,7 @@ Microsoft の [Pragmatic Rust Guidelines](https://microsoft.github.io/rust-guide
 
 - [ ] **Step 2: vq のパッケージを書く**
 
-`vq.py` は `SUMMARY_PATH` で自分の隣の `config-summary.md` を読む。`writers.writePython3Bin` は
-スクリプト1ファイルしか store に置かないので使えない。両方を同じディレクトリに置いてから bin を作る。
+`vq.py` は `SUMMARY_PATH` で自分の隣の `config-summary.md` を読む。`writers.writePython3Bin` はスクリプト1ファイルしか store に置かないので使えない。両方を同じディレクトリに置いてから bin を作る。
 
 `pkgs/vq.nix`:
 
@@ -1860,8 +1859,7 @@ in
     pkgs.vq # vim のコマンドを思い出すための CLI
 ```
 
-rust-guidelines の本文は上流にあるので、`references` だけを別に張る。`ai/skills/rust-guidelines/`
-は SKILL.md しか持たず、`skillLinks` はディレクトリごと張るため、`references` は後から重ねる。
+rust-guidelines の本文は上流にあるので、`references` だけを別に張る。`ai/skills/rust-guidelines/` は SKILL.md しか持たず、`skillLinks` はディレクトリごと張るため、`references` は後から重ねる。
 
 `home.file` の最初のブロック (AGENTS.md を張っているところ) へ足す。
 
