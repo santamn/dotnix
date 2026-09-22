@@ -3,7 +3,7 @@
     "preset-ai-words-ja": true,
     "@textlint-ja/preset-ai-writing": true,
     "preset-ja-technical-writing": {
-      "sentence-length": { "max": 120 },
+      "sentence-length": { "max": 200 },
       "max-comma": false,
       "no-exclamation-question-mark": false,
       "ja-no-mixed-period": false
