@@ -10,13 +10,15 @@ Claude Code、Codex、DeepSeek Harness で同じ skill と規約を使うため�
 ai/
   AGENTS.md          # 全エージェント共通の規約
   skills/            # 自作 skill
-  tools/md2skill.py  # agents/commands 定義を SKILL.md へ変換
+  tools/md2skill/    # agents/commands 定義を SKILL.md へ変換する Go 製 CLI
   hooks/lint-md.sh   # markdownlint と textlint
   textlintrc.json
   claude/settings.json
   codex/{config.toml,hooks.json}
-  vq/                # Vim コマンド提案 CLI (人間用)
+  vq/                # Vim コマンド提案 CLI (人間用、Go)
 ```
+
+`tools/md2skill/` と `vq/` だけは Go で書いてあり、編集したら rebuild が要る。`vq` は `pkgs/vq.nix` から、`md2skill` はビルド時にしか使わないので `ai-agents.nix` の中で直接 `buildGoModule` している。
 
 どのエージェントがどこを見るか。
 

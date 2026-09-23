@@ -78,6 +78,15 @@
     lib.listToAttrs (map (n: lib.nameValuePair n (link "skills/${n}"))
       (lib.remove "rust-guidelines" (subdirs ../../../ai/skills)));
 
+  # agents/ と commands/ を SKILL.md へ変換するツール。
+  # ビルド時にしか使わないのでユーザの環境には入れない
+  md2skill = pkgs.buildGoModule {
+    pname = "md2skill";
+    version = "1.0.0";
+    src = ../../../ai/tools/md2skill;
+    vendorHash = null; # 標準ライブラリだけで書いてあり依存が無い
+  };
+
   # agents/ と commands/ を SKILL.md に変換したもの
   generatedSkills = pkgs.runCommand "dotnix-generated-skills" {} ''
     mkdir -p $out
@@ -86,11 +95,11 @@
       in ''
         ${lib.concatMapStringsSep "\n" (a: ''
           mkdir -p $out/${a}
-          ${pkgs.python3}/bin/python3 ${../../../ai/tools/md2skill.py} --kind agent --name ${a} ${root}/agents/${a}.md $out/${a}/SKILL.md
+          ${md2skill}/bin/md2skill --kind agent --name ${a} ${root}/agents/${a}.md $out/${a}/SKILL.md
         '') (mdNames "${root}/agents")}
         ${lib.concatMapStringsSep "\n" (c: ''
           mkdir -p $out/source-command-${c}
-          ${pkgs.python3}/bin/python3 ${../../../ai/tools/md2skill.py} --kind command --name ${c} ${root}/commands/${c}.md $out/source-command-${c}/SKILL.md
+          ${md2skill}/bin/md2skill --kind command --name ${c} ${root}/commands/${c}.md $out/source-command-${c}/SKILL.md
         '') (mdNames "${root}/commands")}
       '')
       pluginNames}
