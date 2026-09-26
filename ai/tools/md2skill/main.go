@@ -37,8 +37,8 @@ func splitFrontmatter(text string) (map[string]string, string) {
 
 	meta := make(map[string]string)
 	for line := range strings.SplitSeq(head, "\n") {
-		// インデントされた行はネストした値なので、平坦なキーだけを拾う
 		key, value, ok := strings.Cut(line, ":")
+		// インデントされた行はネストした値なので、平坦なキーだけを拾う
 		if ok && !strings.HasPrefix(key, " ") {
 			meta[strings.TrimSpace(key)] = strings.TrimSpace(value)
 		}
@@ -63,8 +63,12 @@ func toSkill(text, name, kind string) (string, error) {
 		skillName = commandPrefix + name
 	}
 
-	return fmt.Sprintf("---\nname: %s\ndescription: %s\n---\n\n%s",
-		skillName, description, claudeDoc.ReplaceAllString(body, "AGENTS.md")), nil
+	return fmt.Sprintf(
+		"---\nname: %s\ndescription: %s\n---\n\n%s",
+		skillName,
+		description,
+		claudeDoc.ReplaceAllString(body, "AGENTS.md"),
+	), nil
 }
 
 // run は CLI 引数を解釈し、1ファイルを変換して書き出す。
@@ -73,7 +77,7 @@ func run() error {
 	name := flag.String("name", "", "skill 名のもとにする定義名")
 	flag.Parse()
 
-	if *kind != "agent" && *kind != "command" {
+	if !(*kind == "agent" || *kind == "command") {
 		return errors.New("--kind には agent か command を渡す")
 	}
 	if *name == "" || flag.NArg() != 2 {
