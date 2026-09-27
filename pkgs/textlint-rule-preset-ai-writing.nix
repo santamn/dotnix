@@ -30,7 +30,7 @@ buildNpmPackage (finalAttrs: {
         "integrity": "sha512-V50KMwwzqJV0NpZIZFwfOD5/lyny3WlSzRiXgA0G7VUnRlqttta1L6UQIHzd6EuBY/cHGfwTIck7w1yH6Q5zUw==",'
   '';
 
-  npmDepsFectherVersion = 2;
+  npmDepsFetcherVersion = 2;
 
   # ライブラリなので bin は作らない。textlint.withPackages が NODE_PATH で拾う
   dontNpmInstall = true;
