@@ -19,7 +19,7 @@ buildNpmPackage (finalAttrs: {
     hash = "sha256-mEi17KZLic5Uzr7NthAM47TqQsCUy6RyknBWB7tTZBc=";
   };
 
-  npmDepsHash = "sha256-sWfslJm0+EtUJqH5QMnPk4xNHDAbcnbmjazriP0V4Io=";
+  npmDepsHash = lib.fakeHash;
 
   # lockfile に resolved がない依存の packument もキャッシュする
   npmDepsFetcherVersion = 2;
