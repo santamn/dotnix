@@ -316,9 +316,9 @@ ai/vq/
 - system prompt に `config-summary.md` を埋め込む。`init.lua` を生で渡さない
 - 出力形式を固定する。コマンド1行、`---`、構成要素ごとに1行 (各40字以内)。前置きと締めは書かせない
 - 独自マッピングを使った場合はその旨を明示させる。標準機能で足りる場合は独自マッピングを使わせない
-- キャッシュは `$XDG_CACHE_HOME/vq/cache.json`。キーは正規化したクエリ (NFKC 変換、前後の空白除去、連続空白の圧縮)
-- ログは `$XDG_CACHE_HOME/vq/log.jsonl` に質問と回答を追記する。何を繰り返し忘れているかを見るため
-- API キーは `ANTHROPIC_API_KEY` を読み、無ければ `$XDG_CONFIG_HOME/vq/api-key` を読む。リポジトリには置かない
+- キャッシュは持たず、質問ごとに API へ問い合わせる
+- ログは `$XDG_STATE_HOME/vq/log.jsonl` に質問と回答を追記する。何を繰り返し忘れているかを見るため
+- API キーは `VQ_API_KEY` を読み、無ければ `$XDG_CONFIG_HOME/vq/api-key` を読む。リポジトリには置かない
 
 プロンプトキャッシュは使わない。設定要約が短く最小トークン数に届かないため効かない。
 
