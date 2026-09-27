@@ -80,7 +80,7 @@
 
   # agents/ と commands/ を SKILL.md へ変換するツール。
   # ビルド時にしか使わないのでユーザの環境には入れない
-  md2skill = pkgs.buildGoModule {
+  md2skill = pkgs.buildGoModule.override {go = pkgs.go_1_26;} {
     pname = "md2skill";
     version = "1.0.0";
     src = ../../../ai/tools/md2skill;

@@ -19,8 +19,7 @@ buildNpmPackage (finalAttrs: {
     hash = "sha256-mEi17KZLic5Uzr7NthAM47TqQsCUy6RyknBWB7tTZBc=";
   };
 
-  # TODO: NixOS 機でビルドし、エラーに出る正しい値へ差し替える
-  npmDepsHash = lib.fakeHash;
+  npmDepsHash = "sha256-sWfslJm0+EtUJqH5QMnPk4xNHDAbcnbmjazriP0V4Io=";
 
   # ライブラリなので bin は作らない。textlint.withPackages が NODE_PATH で拾う
   dontNpmInstall = true;

@@ -16,8 +16,7 @@ buildGoModule (finalAttrs: {
     hash = "sha256-Gm96NA55N2+YHH/3NW+qAeiqYkrsZeBT8EVgLP0Lx34=";
   };
 
-  # TODO: NixOS 機でビルドし、エラーに出る正しい値へ差し替える
-  vendorHash = lib.fakeHash;
+  vendorHash = "sha256-P4uGyeqgsIkVczuVGvW37xbdq2zS7K0lWH3UZpmZc6c=";
 
   # skill 本体も同梱する。ai-agents.nix が $out/share/skills から張る
   postInstall = ''

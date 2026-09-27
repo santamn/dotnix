@@ -20,12 +20,11 @@ stdenv.mkDerivation (finalAttrs: {
     hash = "sha256-0QgNPVyheFdPLCLq6JJy5AFIJ5txr1TOvzJ2VFC2C0I=";
   };
 
-  # TODO: NixOS 機でビルドし、エラーに出る正しい値へ差し替える
   pnpmDeps = fetchPnpmDeps {
     inherit (finalAttrs) pname version src;
     pnpm = pnpm_10;
     fetcherVersion = 4;
-    hash = lib.fakeHash;
+    hash = "sha256-azyV6f7aha1dS0bTTNU5rwzKxRpYaARNVDVJKbMA2sM=";
   };
 
   nativeBuildInputs = [nodejs pnpmConfigHook pnpm_10];
