@@ -35,7 +35,6 @@
     '';
 
     outputHashMode = "flat";
-    outputHashAlgo = "sha256";
     outputHash = "sha256-sJK5MfWT1Xm99Sfwq5YR2rUclJc6yUWzM39eVCFKIOA=";
   };
 in
@@ -48,8 +47,7 @@ in
       cp ${patchedLockfile} package-lock.json
     '';
 
-    # 手順2: outputHashを埋めた後、次にここを空（""）にしてハッシュを取得し、貼る
-    npmDepsHash = lib.fakeHash;
+    npmDepsHash = "sha256-YIk2BYkdz2u23/dyOxGP7J8+U8/BMpBEsDHwzE3Xn4s=";
 
     meta = {
       description = "AI が書いた文章の構造的な癖を検出する textlint プリセット";
