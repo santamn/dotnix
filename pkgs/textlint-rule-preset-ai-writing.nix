@@ -19,7 +19,20 @@ buildNpmPackage (finalAttrs: {
     hash = "sha256-mEi17KZLic5Uzr7NthAM47TqQsCUy6RyknBWB7tTZBc=";
   };
 
-  npmDepsHash = "sha256-G7kCjxxRjcUhSXM8f/wnw7qilAVVM3VD8orq2l1zBLU=";
+  npmDepsHash = lib.fakeHash;
+
+  # upstream の lockfile で欠落している zwitch の取得情報を補う
+  postPatch = ''
+    node -e '
+      const fs = require("fs");
+      const path = "package-lock.json";
+      const lockfile = JSON.parse(fs.readFileSync(path, "utf8"));
+      const dependency = lockfile.packages["node_modules/zwitch"];
+      dependency.resolved = "https://registry.npmjs.org/zwitch/-/zwitch-1.0.5.tgz";
+      dependency.integrity = "sha512-V50KMwwzqJV0NpZIZFwfOD5/lyny3WlSzRiXgA0G7VUnRlqttta1L6UQIHzd6EuBY/cHGfwTIck7w1yH6Q5zUw==";
+      fs.writeFileSync(path, JSON.stringify(lockfile, null, 2) + "\n");
+    '
+  '';
 
   # lockfile に resolved がない依存の packument もキャッシュする
   npmDepsFetcherVersion = 2;
