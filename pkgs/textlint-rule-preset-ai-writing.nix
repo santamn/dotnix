@@ -36,8 +36,7 @@
 
     outputHashMode = "flat";
     outputHashAlgo = "sha256";
-    # 手順1: 最初はここを空（""）にしてビルドし、取得できたハッシュをここに貼る
-    outputHash = lib.fakeHash;
+    outputHash = "sha256-sJK5MfWT1Xm99Sfwq5YR2rUclJc6yUWzM39eVCFKIOA=";
   };
 in
   buildNpmPackage rec {
