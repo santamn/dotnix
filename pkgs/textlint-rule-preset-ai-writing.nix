@@ -24,14 +24,10 @@ buildNpmPackage (finalAttrs: {
   # upstream の lockfile で欠落している zwitch の取得情報を補う
   postPatch = ''
     substituteInPlace package-lock.json \
-    --replace-fail '"node_modules/zwitch": {
-            "version": "1.0.5",
-            "dev": true,' \
-    '"node_modules/zwitch": {
-            "version": "1.0.5",
-            "resolved": "https://registry.npmjs.org/zwitch/-/zwitch-1.0.5.tgz",
-            "integrity": "sha512-V50KMwwzqJV0NpZIZFwfOD5/lyny3WlSzRiXgA0G7VUnRlqttta1L6UQIHzd6EuBY/cHGfwTIck7w1yH6Q5zUw==",
-            "dev": true,'
+        --replace-fail '"node_modules/zwitch": {' \
+        '"node_modules/zwitch": {
+        "resolved": "https://registry.npmjs.org/zwitch/-/zwitch-1.0.5.tgz",
+        "integrity": "sha512-V50KMwwzqJV0NpZIZFwfOD5/lyny3WlSzRiXgA0G7VUnRlqttta1L6UQIHzd6EuBY/cHGfwTIck7w1yH6Q5zUw==",'
   '';
 
   # ライブラリなので bin は作らない。textlint.withPackages が NODE_PATH で拾う
