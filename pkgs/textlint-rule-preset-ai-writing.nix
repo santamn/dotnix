@@ -7,32 +7,36 @@
   buildNpmPackage,
   fetchFromGitHub,
   nodejs,
+  runCommand,
 }:
 buildNpmPackage (finalAttrs: {
   pname = "textlint-rule-preset-ai-writing";
   version = "1.7.0";
 
-  src = fetchFromGitHub {
-    owner = "textlint-ja";
-    repo = "textlint-rule-preset-ai-writing";
-    tag = "v${finalAttrs.version}";
-    hash = "sha256-mEi17KZLic5Uzr7NthAM47TqQsCUy6RyknBWB7tTZBc=";
-  };
+  # srcを取得した段階で package-lock.json を書き換え、Fetcher にも修正を反映させる
+  src = runCommand "source" {} ''
+    cp -R ${fetchFromGitHub {
+      owner = "textlint-ja";
+      repo = "textlint-rule-preset-ai-writing";
+      tag = "v${finalAttrs.version}";
+      hash = "sha256-mEi17KZLic5Uzr7NthAM47TqQsCUy6RyknBWB7tTZBc=";
+    }} $out
+    chmod -R +w $out
 
-  npmDepsHash = "sha256-j9fIAf63+CL3pFBjiYao7IrMu7+cfmdm4yhDgRRvMl0=";
-
-  # upstream の lockfile で欠落している zwitch の取得情報を補う
-  postPatch = ''
-    substituteInPlace package-lock.json \
-        --replace-fail '"node_modules/zwitch": {' \
-        '"node_modules/zwitch": {
-        "resolved": "https://registry.npmjs.org/zwitch/-/zwitch-1.0.5.tgz",
-        "integrity": "sha512-V50KMwwzqJV0NpZIZFwfOD5/lyny3WlSzRiXgA0G7VUnRlqttta1L6UQIHzd6EuBY/cHGfwTIck7w1yH6Q5zUw==",'
+    substituteInPlace $out/package-lock.json \
+      --replace-fail '"node_modules/zwitch": {' \
+      '"node_modules/zwitch": {
+      "resolved": "https://registry.npmjs.org/zwitch/-/zwitch-1.0.5.tgz",
+      "integrity": "sha512-V50KMwwzqJV0NpZIZFwfOD5/lyny3WlSzRiXgA0G7VUnRlqttta1L6UQIHzd6EuBY/cHGfwTIck7w1yH6Q5zUw==",'
   '';
 
-  npmDepsFetcherVersion = 2;
+  npmDepsHash = lib.fakeHash;
+  # npmDepsFetcherVersion = 2;
 
-  # ライブラリなので bin は作らない。textlint.withPackages が NODE_PATH で拾う
+  # npm のピア依存関係エラーやキャッシュ書き込みエラーを防ぐための安定化オプション
+  # makeCacheWritable = true;
+  # npmFlags = ["--legacy-peer-deps"];
+
   dontNpmInstall = true;
 
   installPhase = ''
