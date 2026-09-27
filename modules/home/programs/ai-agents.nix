@@ -146,13 +146,6 @@ in {
     pkgs.vq # vim のコマンドを思い出すためのツール
   ];
 
-  # hunk は git の pager を奪うので無効化する。
-  # git diff の見た目は programs.delta のままにする
-  programs.hunk = {
-    enable = true;
-    enableGitIntegration = false;
-  };
-
   home.file = lib.mkMerge [
     {
       # 全エージェント共通の規約

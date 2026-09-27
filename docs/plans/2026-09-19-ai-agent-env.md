@@ -1229,13 +1229,6 @@ in {
     pkgs.hunk # diff レビュー用 TUI
   ];
 
-  # hunk は git の pager を奪うので無効化する。
-  # git diff の見た目は programs.delta のままにする
-  programs.hunk = {
-    enable = true;
-    enableGitIntegration = false;
-  };
-
   home.file = {
     # 全エージェント共通の規約。3ハーネスが別々の場所を見るので同じ実体へ3本張る
     ".claude/CLAUDE.md".source = link "AGENTS.md";

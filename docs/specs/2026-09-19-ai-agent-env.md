@@ -109,10 +109,6 @@ textlint のプリセット構成は次の3つとする。
 2. `preset-ai-writing` — AI が使いがちな構造 (リストの形、見出しの強調、コロン)
 3. `preset-ja-technical-writing` — 一文の長さ、二重否定、漢字の連続など
 
-### hunk と delta の衝突
-
-`hunk` の home-manager モジュールは `enableGitIntegration` で git の pager を奪う。`programs.delta` が既に pager を設定しているため、`enableGitIntegration = false` とし、`hunk` は独立したコマンドとして使う。`git diff` の見た目は delta のままにする。
-
 ## skill
 
 `~/.agents/skills/` と `~/.claude/skills/` の両方に張るもの。
