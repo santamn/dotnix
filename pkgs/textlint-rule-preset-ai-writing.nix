@@ -19,7 +19,7 @@ buildNpmPackage (finalAttrs: {
     hash = "sha256-mEi17KZLic5Uzr7NthAM47TqQsCUy6RyknBWB7tTZBc=";
   };
 
-  npmDepsHash = "sha256-bKv7U2wvlwzjiBst1Qt2ECqV86ex/97jvNQBbchkpNk=";
+  npmDepsHash = ib.fakeHash;
 
   # upstream の lockfile で欠落している zwitch の取得情報を補う
   postPatch = ''
@@ -29,6 +29,8 @@ buildNpmPackage (finalAttrs: {
         "resolved": "https://registry.npmjs.org/zwitch/-/zwitch-1.0.5.tgz",
         "integrity": "sha512-V50KMwwzqJV0NpZIZFwfOD5/lyny3WlSzRiXgA0G7VUnRlqttta1L6UQIHzd6EuBY/cHGfwTIck7w1yH6Q5zUw==",'
   '';
+
+  npmDepsFectherVersion = 2;
 
   # ライブラリなので bin は作らない。textlint.withPackages が NODE_PATH で拾う
   dontNpmInstall = true;
