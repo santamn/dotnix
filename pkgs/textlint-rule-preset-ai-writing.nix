@@ -60,7 +60,7 @@ in
     src = patchedSrc;
 
     # 【手順 2】手順1のハッシュを埋めた後、ここがエラーになるので、取得できたハッシュを貼る
-    npmDepsHash = "";
+    npmDepsHash = "sha256-0b5xmbWz5rJQBHNTeGE1YF3DKxaHw3ZIqoMsD80Zks0=";
 
     npmDepsFetcherVersion = 2;
     makeCacheWritable = true;
