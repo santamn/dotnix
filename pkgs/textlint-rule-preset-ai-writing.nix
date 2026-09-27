@@ -7,56 +7,55 @@
   buildNpmPackage,
   fetchFromGitHub,
   nodejs,
-  runCommand,
-}:
-buildNpmPackage (finalAttrs: {
-  pname = "textlint-rule-preset-ai-writing";
+  stdenv,
+  cacert, # npmのHTTPS通信のために必要
+}: let
   version = "1.7.0";
-
-  # srcを取得した段階で package-lock.json を書き換え、Fetcher にも修正を反映させる
-  src = runCommand "source" { } ''
-    cp -R ${
-      fetchFromGitHub {
-        owner = "textlint-ja";
-        repo = "textlint-rule-preset-ai-writing";
-        tag = "v${finalAttrs.version}";
-        hash = "sha256-mEi17KZLic5Uzr7NthAM47TqQsCUy6RyknBWB7tTZBc=";
-      }
-    } $out
-    chmod -R +w $out
-
-    substituteInPlace $out/package-lock.json \
-      --replace-fail '"node_modules/zwitch": {' \
-      '"node_modules/zwitch": {
-      "resolved": "https://registry.npmjs.org/zwitch/-/zwitch-1.0.5.tgz",
-      "integrity": "sha512-V50KMwwzqJV0NpZIZFwfOD5/lyny3WlSzRiXgA0G7VUnRlqttta1L6UQIHzd6EuBY/cHGfwTIck7w1yH6Q5zUw==",' \
-      --replace-warn '"node_modules/yocto-queue": {' \
-      '"node_modules/yocto-queue": {
-      "resolved": "https://registry.npmjs.org/yocto-queue/-/yocto-queue-0.1.0.tgz",
-      "integrity": "sha512-rVksvsnNCdJ/ohGc6xgPwyN8eheCxsiLM8mxuE/t/mOVqJewPuO1miLpTHQiRgTKCLexL4MeAFVagts7HmNZ2Q==",'
-  '';
-
-  npmDepsHash = "sha256-n5nebXpkDWFB6SsY5A55+U2qChH5hmhsdhSEn8IOzzI=";
-  npmDepsFetcherVersion = 2;
-
-  # npm のピア依存関係エラーやキャッシュ書き込みエラーを防ぐための安定化オプション
-  makeCacheWritable = true;
-  npmFlags = [ "--legacy-peer-deps" ];
-
-  dontNpmInstall = true;
-
-  installPhase = ''
-    runHook preInstall
-    mkdir -p $out/lib/node_modules/@textlint-ja/${finalAttrs.pname}
-    cp -r lib package.json node_modules \
-      $out/lib/node_modules/@textlint-ja/${finalAttrs.pname}/
-    runHook postInstall
-  '';
-
-  meta = {
-    description = "AI が書いた文章の構造的な癖を検出する textlint プリセット";
-    homepage = "https://github.com/textlint-ja/textlint-rule-preset-ai-writing";
-    license = lib.licenses.mit;
-    platforms = nodejs.meta.platforms;
+  src = fetchFromGitHub {
+    owner = "textlint-ja";
+    repo = "textlint-rule-preset-ai-writing";
+    tag = "v${version}";
+    hash = "sha256-mEi17KZLic5Uzr7NthAM47TqQsCUy6RyknBWB7tTZBc=";
   };
-})
+
+  # Nix 内でネットワークに繋ぎ、完全な package-lock.json を自動生成する
+  patchedLockfile = stdenv.mkDerivation {
+    name = "patched-package-lock.json";
+    inherit src;
+    nativeBuildInputs = [nodejs];
+    buildInputs = [cacert]; # httpsの証明書がないとnpmがエラーになるため
+
+    # 既存の不完全な package-lock.json をベースに欠落データを補完する
+    buildPhase = ''
+      npm install --package-lock-only --ignore-scripts
+    '';
+
+    installPhase = ''
+      cp package-lock.json $out
+    '';
+
+    outputHashMode = "flat";
+    outputHashAlgo = "sha256";
+    # 手順1: 最初はここを空（""）にしてビルドし、取得できたハッシュをここに貼る
+    outputHash = lib.fakeHash;
+  };
+in
+  buildNpmPackage rec {
+    pname = "textlint-rule-preset-ai-writing";
+    inherit version src;
+
+    # ビルド開始直後に、上で自動生成した健全なロックファイルで上書きする
+    postPatch = ''
+      cp ${patchedLockfile} package-lock.json
+    '';
+
+    # 手順2: outputHashを埋めた後、次にここを空（""）にしてハッシュを取得し、貼る
+    npmDepsHash = lib.fakeHash;
+
+    meta = {
+      description = "AI が書いた文章の構造的な癖を検出する textlint プリセット";
+      homepage = "https://github.com/textlint-ja/textlint-rule-preset-ai-writing";
+      license = lib.licenses.mit;
+      platforms = nodejs.meta.platforms;
+    };
+  }
