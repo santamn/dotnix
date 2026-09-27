@@ -42,7 +42,7 @@
     outputHashMode = "flat";
     outputHashAlgo = "sha256";
     # 【手順 1】まずはここを "" にしてビルドし、取得できたハッシュを貼る
-    outputHash = "";
+    outputHash = "sha256-sJK5MfWT1Xm99Sfwq5YR2rUclJc6yUWzM39eVCFKIOA=";
   };
 
   # 3. 元ソースの package-lock.json を、上記で生成したものにすり替えた「新しいソース」を作る
