@@ -30,7 +30,7 @@ buildNpmPackage (finalAttrs: {
       "integrity": "sha512-V50KMwwzqJV0NpZIZFwfOD5/lyny3WlSzRiXgA0G7VUnRlqttta1L6UQIHzd6EuBY/cHGfwTIck7w1yH6Q5zUw==",'
   '';
 
-  npmDepsHash = lib.fakeHash;
+  npmDepsHash = "sha256-RgrbVG/j3sxSgs/lsBqUs6hdnQwKr9+ofj8BZJ1UARU=";
   # npmDepsFetcherVersion = 2;
 
   # npm のピア依存関係エラーやキャッシュ書き込みエラーを防ぐための安定化オプション
