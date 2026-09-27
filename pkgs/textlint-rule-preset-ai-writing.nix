@@ -8,12 +8,9 @@
   fetchFromGitHub,
   nodejs,
   runCommand,
-  stdenv,
-  cacert,
 }: let
   version = "1.7.0";
 
-  # 1. GitHubから元ソースを取得
   originalSrc = fetchFromGitHub {
     owner = "textlint-ja";
     repo = "textlint-rule-preset-ai-writing";
@@ -21,46 +18,45 @@
     hash = "sha256-mEi17KZLic5Uzr7NthAM47TqQsCUy6RyknBWB7tTZBc=";
   };
 
-  # 2. 不完全なロックファイルを破棄し、npmに再計算させて完全なロックファイルを生成する
-  patchedLockfile = stdenv.mkDerivation {
-    name = "package-lock.json";
-    src = originalSrc;
-    nativeBuildInputs = [nodejs cacert];
-
-    buildPhase = ''
-      # Nixのサンドボックス内ではHOMEディレクトリがないとnpmが落ちるため設定
-      export HOME=$TMPDIR
-      # 完全なパッケージツリーを再計算して package-lock.json を出力
-      npm install --package-lock-only --ignore-scripts --legacy-peer-deps
-    '';
-
-    installPhase = ''
-      # 生成されたファイルのみを出力する
-      cp package-lock.json $out
-    '';
-
-    outputHashMode = "flat";
-    outputHashAlgo = "sha256";
-    # 【手順 1】まずはここを "" にしてビルドし、取得できたハッシュを貼る
-    outputHash = "sha256-sJK5MfWT1Xm99Sfwq5YR2rUclJc6yUWzM39eVCFKIOA=";
-  };
-
-  # 3. 元ソースの package-lock.json を、上記で生成したものにすり替えた「新しいソース」を作る
-  patchedSrc = runCommand "patched-source" {} ''
-    cp -R ${originalSrc} $out
+  # package-lock.json 内で resolved が欠落している全依存関係に npm レジストリの標準 URL を補完する
+  patchedSrc = runCommand "patched-source" {nativeBuildInputs = [nodejs];} ''
+    cp -R ${originalSrc}$out
     chmod -R +w $out
-    cp ${patchedLockfile} $out/package-lock.json
+
+    node -e '
+      const fs = require("fs");
+      const lockPath = "$out/package-lock.json";
+      const lock = JSON.parse(fs.readFileSync(lockPath, "utf8"));
+
+      if (lock.packages) {
+        for (const [pkgPath, pkg] of Object.entries(lock.packages)) {
+          // version が存在するのに resolved がない項目をすべて自動補完
+          if (pkgPath && pkg.version && !pkg.resolved && !pkg.link) {
+            const name = pkgPath.replace(/^.*node_modules\//, "");
+            let url;
+            if (name.startsWith("@")) {
+              const [scope, subName] = name.split("/");
+              url = `https://registry.npmjs.org/\${scope}/\${subName}/-/\${subName}-\${pkg.version}.tgz`;
+            } else {
+              url = `https://registry.npmjs.org/\${name}/-/\${name}-\${pkg.version}.tgz`;
+            }
+            pkg.resolved = url;
+          }
+        }
+      }
+
+      fs.writeFileSync(lockPath, JSON.stringify(lock, null, 2));
+    '
   '';
 in
   buildNpmPackage rec {
     pname = "textlint-rule-preset-ai-writing";
     inherit version;
 
-    # すり替え済みの完全なソースツリーを buildNpmPackage に渡す！
     src = patchedSrc;
 
-    # 【手順 2】手順1のハッシュを埋めた後、ここがエラーになるので、取得できたハッシュを貼る
-    npmDepsHash = "sha256-0b5xmbWz5rJQBHNTeGE1YF3DKxaHw3ZIqoMsD80Zks0=";
+    # 1. まずはここを空（""）にしてビルドし、出たハッシュを貼り付ける
+    npmDepsHash = "";
 
     npmDepsFetcherVersion = 2;
     makeCacheWritable = true;
