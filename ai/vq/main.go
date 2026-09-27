@@ -14,12 +14,10 @@ import (
 	"iter"
 	"os"
 	"path/filepath"
-	"regexp"
 	"strings"
 
 	"github.com/anthropics/anthropic-sdk-go"
 	"github.com/anthropics/anthropic-sdk-go/option"
-	"golang.org/x/text/unicode/norm"
 )
 
 const (
@@ -32,22 +30,10 @@ const (
 //go:embed config-summary.md
 var configSummary string
 
-// 連続する空白をまとめるための正規表現
-var spaces = regexp.MustCompile(`\s+`)
-
-// --- Calculation: 外界に触らない部分 ---
-
-// normalize はキャッシュキー用にクエリを正規化する。
-// NFKC で全角と半角を揃えてから小文字にし、空白を1つに潰す
-func normalize(query string) string {
-	text := strings.ToLower(strings.TrimSpace(norm.NFKC.String(query)))
-	return spaces.ReplaceAllString(text, " ")
-}
-
 // loadAPIKey は API キーを環境変数か、無ければ設定ファイルから読む。
 // どちらにも無ければ空文字を返す
 func loadAPIKey(getenv func(string) string, readFile func(string) (string, error)) string {
-	if key := strings.TrimSpace(getenv("ANTHROPIC_API_KEY")); key != "" {
+	if key := strings.TrimSpace(getenv("VQ_API_KEY")); key != "" {
 		return key
 	}
 	text, err := readFile(keyPath())
@@ -57,8 +43,7 @@ func loadAPIKey(getenv func(string) string, readFile func(string) (string, error
 	return strings.TrimSpace(text)
 }
 
-// buildSystem は system prompt を組み立てる
-func buildSystem(summary string) string {
+func buildSystemPrompt(summary string) string {
 	return fmt.Sprintf(`
 あなたはvimコマンドの提案器です。ユーザーの vim 設定は以下の通り。
 
@@ -75,41 +60,7 @@ func buildSystem(summary string) string {
 `, summary)
 }
 
-// ask はクエリに答える。キャッシュにあればそれを返し、無ければ send で取りに行く。
-//
-// send はトークンのイテレータを返す。届いた端から w へ流すため、
-// 呼び出し側が差し替えられるようにしてある
-func ask(
-	query string,
-	cache map[string]string,
-	w io.Writer,
-	send func(string) iter.Seq2[string, error],
-) (string, bool, error) {
-	key := normalize(query)
-	if text, ok := cache[key]; ok {
-		return text, true, nil
-	}
-
-	var b strings.Builder
-	for chunk, err := range send(query) {
-		if err != nil {
-			return "", false, err
-		}
-		b.WriteString(chunk)
-		if _, err := io.WriteString(w, chunk); err != nil {
-			return "", false, err
-		}
-	}
-
-	text := b.String()
-	cache[key] = text
-	return text, false, nil
-}
-
-// --- Action: ファイルと API に触る部分 ---
-
 // vqDir は XDG の環境変数を見て、無ければ ~/ 配下の既定値の下の vq/ を返す。
-// os.UserCacheDir と os.UserConfigDir は macOS で ~/Library を返すので使わない。
 // README と docs/ai-agents.md が XDG のパスで書いてある
 func vqDir(env, fallback string) string {
 	base := os.Getenv(env)
@@ -123,12 +74,6 @@ func vqDir(env, fallback string) string {
 	return filepath.Join(base, "vq")
 }
 
-// cacheDir はキャッシュとログの置き場所。
-// 取れなければ空文字を返し、保存を諦める (回答自体は出せるため)
-func cacheDir() string {
-	return vqDir("XDG_CACHE_HOME", ".cache")
-}
-
 // keyPath は鍵ファイルの場所
 func keyPath() string {
 	dir := vqDir("XDG_CONFIG_HOME", ".config")
@@ -138,10 +83,10 @@ func keyPath() string {
 	return filepath.Join(dir, "api-key")
 }
 
-// writeJSON は JSON を1件書き出す。
+// appendJSON は JSON を1件書き出す。
 // vim のコマンドは < > を多く含むので HTML エスケープは切る
-func writeJSON(path string, flag int, v any) error {
-	f, err := os.OpenFile(path, os.O_CREATE|os.O_WRONLY|flag, 0o644)
+func appendJSON(path string, v any) error {
+	f, err := os.OpenFile(path, os.O_CREATE|os.O_WRONLY|os.O_APPEND, 0o644)
 	if err != nil {
 		return err
 	}
@@ -152,48 +97,22 @@ func writeJSON(path string, flag int, v any) error {
 	return enc.Encode(v)
 }
 
-// loadCache はローカルのキャッシュを読む。壊れていたら捨てて作り直す
-func loadCache(dir string) map[string]string {
-	cache := map[string]string{}
-	if dir == "" {
-		return cache
-	}
-	b, err := os.ReadFile(filepath.Join(dir, "cache.json"))
-	if err != nil {
-		return cache
-	}
-	if err := json.Unmarshal(b, &cache); err != nil {
-		return map[string]string{}
-	}
-	return cache
-}
-
-// saveCache はキャッシュを書き戻す
-func saveCache(dir string, cache map[string]string) error {
-	if dir == "" {
-		return nil
-	}
-	if err := os.MkdirAll(dir, 0o755); err != nil {
-		return err
-	}
-	return writeJSON(filepath.Join(dir, "cache.json"), os.O_TRUNC, cache)
-}
-
-// logEntry は質問と回答を追記する。
+// recordInteraction は質問と回答を追記する。
 // 何を繰り返し忘れているかが見えるので、config-summary.md を更新する材料になる
-func logEntry(dir, query, answer string, cached bool) error {
-	if dir == "" {
+func recordInteraction(query, answer string) error {
+	logDir := vqDir("XDG_STATE_HOME", filepath.Join(".local", "state"))
+	if logDir == "" {
 		return nil
 	}
-	if err := os.MkdirAll(dir, 0o755); err != nil {
+
+	if err := os.MkdirAll(logDir, 0o755); err != nil {
 		return err
 	}
-	row := struct {
-		Query  string `json:"query"`
-		Answer string `json:"answer"`
-		Cached bool   `json:"cached"`
-	}{query, answer, cached}
-	return writeJSON(filepath.Join(dir, "log.jsonl"), os.O_APPEND, row)
+
+	return appendJSON(
+		filepath.Join(logDir, "log.jsonl"),
+		map[string]string{"query": query, "answer": answer},
+	)
 }
 
 // streamAnswer は API をストリーミングで叩く send を作る。
@@ -209,6 +128,8 @@ func streamAnswer(ctx context.Context, client anthropic.Client, system string) f
 					anthropic.NewUserMessage(anthropic.NewTextBlock(query)),
 				},
 			})
+			defer stream.Close()
+
 			for stream.Next() {
 				delta, ok := stream.Current().AsAny().(anthropic.ContentBlockDeltaEvent)
 				if !ok {
@@ -237,29 +158,31 @@ func run(ctx context.Context, args []string, stdout io.Writer) error {
 		return string(b), err
 	})
 	if apiKey == "" {
-		return fmt.Errorf("ANTHROPIC_API_KEY も %s も無い", keyPath())
+		return fmt.Errorf(
+			"API キーが見つかりません。環境変数 VQ_API_KEY か、設定ファイル %s に書き込んでください",
+			keyPath(),
+		)
 	}
 
 	client := anthropic.NewClient(option.WithAPIKey(apiKey))
-	send := streamAnswer(ctx, client, buildSystem(configSummary))
+	send := streamAnswer(ctx, client, buildSystemPrompt(configSummary))
 
-	dir := cacheDir()
-	cache := loadCache(dir)
-	answer, cached, err := ask(query, cache, stdout, send)
-	if err != nil {
-		return err
-	}
-	// キャッシュに当たったぶんは streaming では出ていないので、ここで一度に出す
-	if cached {
-		if _, err := io.WriteString(stdout, answer); err != nil {
+	var answer strings.Builder
+	for chunk, err := range send(query) {
+		if err != nil {
+			return err
+		}
+		answer.WriteString(chunk)
+		if _, err := io.WriteString(stdout, chunk); err != nil {
 			return err
 		}
 	}
+
 	if _, err := io.WriteString(stdout, "\n"); err != nil {
 		return err
 	}
 
-	return errors.Join(saveCache(dir, cache), logEntry(dir, query, answer, cached))
+	return recordInteraction(query, answer.String())
 }
 
 func main() {
