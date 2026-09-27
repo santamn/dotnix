@@ -8,56 +8,78 @@
   fetchFromGitHub,
   nodejs,
   runCommand,
-}:
-buildNpmPackage (finalAttrs: {
-  pname = "textlint-rule-preset-ai-writing";
+  stdenv,
+  cacert,
+}: let
   version = "1.7.0";
 
-  # 依存関係をフェッチする「前」に修正を反映させる完璧なアプローチ
-  src = runCommand "source" {} ''
-    cp -R ${
-      fetchFromGitHub {
-        owner = "textlint-ja";
-        repo = "textlint-rule-preset-ai-writing";
-        tag = "v${finalAttrs.version}";
-        hash = "sha256-mEi17KZLic5Uzr7NthAM47TqQsCUy6RyknBWB7tTZBc=";
-      }
-    } $out
-    chmod -R +w $out
-
-    substituteInPlace $out/package-lock.json \
-      --replace-fail '"node_modules/zwitch": {' \
-      '"node_modules/zwitch": {
-      "resolved": "https://registry.npmjs.org/zwitch/-/zwitch-1.0.5.tgz",
-      "integrity": "sha512-V50KMwwzqJV0NpZIZFwfOD5/lyny3WlSzRiXgA0G7VUnRlqttta1L6UQIHzd6EuBY/cHGfwTIck7w1yH6Q5zUw==",' \
-      --replace-warn '"node_modules/yocto-queue": {' \
-      '"node_modules/yocto-queue": {
-      "resolved": "https://registry.npmjs.org/yocto-queue/-/yocto-queue-0.1.0.tgz",
-      "integrity": "sha512-rVksvsnNCdJ/ohGc6xgPwyN8eheCxsiLM8mxuE/t/mOVqJewPuO1miLpTHQiRgTKCLexL4MeAFVagts7HmNZ2Q==",' \
-      --replace-warn '"node_modules/yn": {' \
-      '"node_modules/yn": {
-      "resolved": "https://registry.npmjs.org/yn/-/yn-3.1.1.tgz",
-      "integrity": "sha512-Ux4ygGWsu2c7isFWe8Yu1YluJmqVhxqK2cLXNQA5AcC3QfbGNpM7fu0Y8b/z16pXLnFxZYvWhd3fhBY9DLmC6Q==",'
-  '';
-
-  npmDepsHash = "sha256-pJ9Q2ZGdrUmL0cVPGCFN6aRZo98gaa59wJTH21YaY1s=";
-  npmDepsFetcherVersion = 2;
-  makeCacheWritable = true;
-  npmFlags = ["--legacy-peer-deps"];
-
-  # 通常のCLIツールとは異なり、プラグインとして特定の階層に配置するための処理
-  dontNpmInstall = true;
-  installPhase = ''
-    runHook preInstall
-    mkdir -p $out/lib/node_modules/@textlint-ja/${finalAttrs.pname}
-    cp -r lib package.json node_modules $out/lib/node_modules/@textlint-ja/${finalAttrs.pname}/
-    runHook postInstall
-  '';
-
-  meta = {
-    description = "AI が書いた文章の構造的な癖を検出する textlint プリセット";
-    homepage = "https://github.com/textlint-ja/textlint-rule-preset-ai-writing";
-    license = lib.licenses.mit;
-    platforms = nodejs.meta.platforms;
+  # 1. GitHubから元ソースを取得
+  originalSrc = fetchFromGitHub {
+    owner = "textlint-ja";
+    repo = "textlint-rule-preset-ai-writing";
+    tag = "v${version}";
+    hash = "sha256-mEi17KZLic5Uzr7NthAM47TqQsCUy6RyknBWB7tTZBc=";
   };
-})
+
+  # 2. 不完全なロックファイルを破棄し、npmに再計算させて完全なロックファイルを生成する
+  patchedLockfile = stdenv.mkDerivation {
+    name = "package-lock.json";
+    src = originalSrc;
+    nativeBuildInputs = [nodejs cacert];
+
+    buildPhase = ''
+      # Nixのサンドボックス内ではHOMEディレクトリがないとnpmが落ちるため設定
+      export HOME=$TMPDIR
+      # 完全なパッケージツリーを再計算して package-lock.json を出力
+      npm install --package-lock-only --ignore-scripts --legacy-peer-deps
+    '';
+
+    installPhase = ''
+      # 生成されたファイルのみを出力する
+      cp package-lock.json $out
+    '';
+
+    outputHashMode = "flat";
+    outputHashAlgo = "sha256";
+    # 【手順 1】まずはここを "" にしてビルドし、取得できたハッシュを貼る
+    outputHash = "";
+  };
+
+  # 3. 元ソースの package-lock.json を、上記で生成したものにすり替えた「新しいソース」を作る
+  patchedSrc = runCommand "patched-source" {} ''
+    cp -R ${originalSrc} $out
+    chmod -R +w $out
+    cp ${patchedLockfile} $out/package-lock.json
+  '';
+in
+  buildNpmPackage rec {
+    pname = "textlint-rule-preset-ai-writing";
+    inherit version;
+
+    # すり替え済みの完全なソースツリーを buildNpmPackage に渡す！
+    src = patchedSrc;
+
+    # 【手順 2】手順1のハッシュを埋めた後、ここがエラーになるので、取得できたハッシュを貼る
+    npmDepsHash = "";
+
+    npmDepsFetcherVersion = 2;
+    makeCacheWritable = true;
+    npmFlags = ["--legacy-peer-deps"];
+
+    dontNpmInstall = true;
+
+    installPhase = ''
+      runHook preInstall
+      mkdir -p $out/lib/node_modules/@textlint-ja/${pname}
+      cp -r lib package.json node_modules \
+        $out/lib/node_modules/@textlint-ja/${pname}/
+      runHook postInstall
+    '';
+
+    meta = {
+      description = "AI が書いた文章の構造的な癖を検出する textlint プリセット";
+      homepage = "https://github.com/textlint-ja/textlint-rule-preset-ai-writing";
+      license = lib.licenses.mit;
+      platforms = nodejs.meta.platforms;
+    };
+  }
