@@ -19,7 +19,7 @@ buildNpmPackage (finalAttrs: {
     hash = "sha256-mEi17KZLic5Uzr7NthAM47TqQsCUy6RyknBWB7tTZBc=";
   };
 
-  npmDepsHash = ib.fakeHash;
+  npmDepsHash = lib.fakeHash;
 
   # upstream の lockfile で欠落している zwitch の取得情報を補う
   postPatch = ''
