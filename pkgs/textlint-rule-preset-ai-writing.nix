@@ -21,6 +21,9 @@ buildNpmPackage (finalAttrs: {
 
   npmDepsHash = "sha256-sWfslJm0+EtUJqH5QMnPk4xNHDAbcnbmjazriP0V4Io=";
 
+  # lockfile に resolved がない依存の packument もキャッシュする
+  npmDepsFetcherVersion = 2;
+
   # ライブラリなので bin は作らない。textlint.withPackages が NODE_PATH で拾う
   dontNpmInstall = true;
 
