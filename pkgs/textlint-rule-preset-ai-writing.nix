@@ -40,7 +40,7 @@ buildNpmPackage (finalAttrs: {
       "integrity": "sha512-Ux4ygGWsu2c7isFWe8Yu1YluJmqVhxqK2cLXNQA5AcC3QfbGNpM7fu0Y8b/z16pXLnFxZYvWhd3fhBY9DLmC6Q==",'
   '';
 
-  npmDepsHash = lib.fakeHash;
+  npmDepsHash = "sha256-pJ9Q2ZGdrUmL0cVPGCFN6aRZo98gaa59wJTH21YaY1s=";
   npmDepsFetcherVersion = 2;
   makeCacheWritable = true;
   npmFlags = ["--legacy-peer-deps"];
