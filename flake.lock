@@ -1085,7 +1085,7 @@
     "widevine-proxy2-release": {
       "flake": false,
       "locked": {
-        "narHash": "sha256-ew4zuGRXFLWrJfSclJinvyoaeIjLOgnqUkNcoH7nIj4=",
+        "narHash": "sha256-HxtMLPmMXUB9KcMysi4lzxepT57OzantDUjLJQtNYXQ=",
         "type": "file",
         "url": "https://api.github.com/repos/DevLARLEY/WidevineProxy2/releases/latest"
       },
